@@ -39,16 +39,6 @@ DailyRoutines.CodeAnalysis/
 | DR0004 | 设计 | 控制语句的语句体必须另起一行 | 警告 |
 | DR0005 | 设计 | 只有一行代码的控制语句不应使用大括号 | 警告 |
 
-## 使用方法
-
-这个分析器已经通过 `Directory.Build.props` 配置应用到以下项目:
-
-- DailyRoutines
-- DailyRoutines.Modules
-- DailyRoutines.ModulesPublic
-
-当你在这些项目中编写代码时，如果违反了规则，将会在 IDE 中显示警告或错误，并提供修复建议。
-
 ## 添加新规则
 
 要添加新的规则，请按照以下步骤操作:
