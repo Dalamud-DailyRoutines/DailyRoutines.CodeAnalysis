@@ -18,7 +18,7 @@ namespace DailyRoutines.CodeAnalysis.Rules.Usage
     [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(UseNintInsteadOfIntPtrCodeFixProvider)), Shared]
     public class UseNintInsteadOfIntPtrCodeFixProvider : BaseCodeFixProvider
     {
-        protected override ImmutableArray<string> GetFixableDiagnosticIds() => 
+        protected override ImmutableArray<string> GetFixableDiagnosticIds() =>
             ImmutableArray.Create(DiagnosticRules.UseNintInsteadOfIntPtr.Id);
 
         public override async Task RegisterCodeFixesAsync(CodeFixContext context)
@@ -46,19 +46,21 @@ namespace DailyRoutines.CodeAnalysis.Rules.Usage
         {
             var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
             if (root == null) return document;
-            
+
             SyntaxNode? newNode = null;
 
-            if (typeNode is IdentifierNameSyntax)
+            switch (typeNode)
             {
-                newNode = SyntaxFactory.IdentifierName("nint");
-            }
-            else if (typeNode is QualifiedNameSyntax qualifiedName)
-            {
-                // 只有当右侧是IntPtr时才替换
-                if (qualifiedName.Right.Identifier.Text == "IntPtr")
-                {
+                case IdentifierNameSyntax:
                     newNode = SyntaxFactory.IdentifierName("nint");
+                    break;
+                case QualifiedNameSyntax qualifiedName:
+                {
+                    // 只有当右侧是IntPtr时才替换
+                    if (qualifiedName.Right.Identifier.Text == "IntPtr")
+                        newNode = SyntaxFactory.IdentifierName("nint");
+
+                    break;
                 }
             }
 
@@ -69,4 +71,4 @@ namespace DailyRoutines.CodeAnalysis.Rules.Usage
             return document.WithSyntaxRoot(newRoot);
         }
     }
-} 
+}

@@ -32,12 +32,13 @@ public class UseNintInsteadOfIntPtrAnalyzer() : BaseAnalyzer(DiagnosticRules.Use
             case QualifiedNameSyntax qualifiedName:
             {
                 // 处理带命名空间的类型名称，如 System.IntPtr
-                if (qualifiedName.Right.Identifier.Text == "IntPtr") typeName = "IntPtr";
+                if (qualifiedName.Right.Identifier.Text == "IntPtr")
+                    typeName = "IntPtr";
                 break;
             }
         }
 
-        if (typeName == "IntPtr") 
+        if (typeName == "IntPtr")
             ReportDiagnostic(context, typeNode.GetLocation());
     }
 }

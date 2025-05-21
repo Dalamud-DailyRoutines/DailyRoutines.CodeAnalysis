@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using DailyRoutines.CodeAnalysis.Common;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -30,7 +31,8 @@ public class DoNotUseUnderscorePrefixInNamesAnalyzer() : BaseAnalyzer(Diagnostic
         var variableDeclarator = (VariableDeclaratorSyntax)context.Node;
         var name               = variableDeclarator.Identifier.Text;
 
-        if (name.StartsWith("_", StringComparison.Ordinal)) ReportDiagnostic(context, variableDeclarator.Identifier.GetLocation());
+        if (name.StartsWith("_", StringComparison.Ordinal))
+            ReportDiagnostic(context, variableDeclarator.Identifier.GetLocation());
     }
 
     private void AnalyzeParameterDeclaration(SyntaxNodeAnalysisContext context)
@@ -38,7 +40,8 @@ public class DoNotUseUnderscorePrefixInNamesAnalyzer() : BaseAnalyzer(Diagnostic
         var parameter = (ParameterSyntax)context.Node;
         var name      = parameter.Identifier.Text;
 
-        if (name.StartsWith("_", StringComparison.Ordinal)) ReportDiagnostic(context, parameter.Identifier.GetLocation());
+        if (name.StartsWith("_", StringComparison.Ordinal))
+            ReportDiagnostic(context, parameter.Identifier.GetLocation());
     }
 
     private void AnalyzeMethodDeclaration(SyntaxNodeAnalysisContext context)
@@ -46,7 +49,8 @@ public class DoNotUseUnderscorePrefixInNamesAnalyzer() : BaseAnalyzer(Diagnostic
         var methodDeclaration = (MethodDeclarationSyntax)context.Node;
         var name              = methodDeclaration.Identifier.Text;
 
-        if (name.StartsWith("_", StringComparison.Ordinal)) ReportDiagnostic(context, methodDeclaration.Identifier.GetLocation());
+        if (name.StartsWith("_", StringComparison.Ordinal))
+            ReportDiagnostic(context, methodDeclaration.Identifier.GetLocation());
     }
 
     private void AnalyzePropertyDeclaration(SyntaxNodeAnalysisContext context)
@@ -54,17 +58,18 @@ public class DoNotUseUnderscorePrefixInNamesAnalyzer() : BaseAnalyzer(Diagnostic
         var propertyDeclaration = (PropertyDeclarationSyntax)context.Node;
         var name                = propertyDeclaration.Identifier.Text;
 
-        if (name.StartsWith("_", StringComparison.Ordinal)) ReportDiagnostic(context, propertyDeclaration.Identifier.GetLocation());
+        if (name.StartsWith("_", StringComparison.Ordinal))
+            ReportDiagnostic(context, propertyDeclaration.Identifier.GetLocation());
     }
 
     private void AnalyzeFieldDeclaration(SyntaxNodeAnalysisContext context)
     {
         var fieldDeclaration = (FieldDeclarationSyntax)context.Node;
-        foreach (var variable in fieldDeclaration.Declaration.Variables)
-        {
-            var name = variable.Identifier.Text;
-            if (name.StartsWith("_", StringComparison.Ordinal)) ReportDiagnostic(context, variable.Identifier.GetLocation());
-        }
+        foreach (var variable in from variable in fieldDeclaration.Declaration.Variables
+                 let name = variable.Identifier.Text
+                 where name.StartsWith("_", StringComparison.Ordinal)
+                 select variable)
+            ReportDiagnostic(context, variable.Identifier.GetLocation());
     }
 
     private void AnalyzeClassDeclaration(SyntaxNodeAnalysisContext context)
@@ -72,7 +77,8 @@ public class DoNotUseUnderscorePrefixInNamesAnalyzer() : BaseAnalyzer(Diagnostic
         var classDeclaration = (ClassDeclarationSyntax)context.Node;
         var name             = classDeclaration.Identifier.Text;
 
-        if (name.StartsWith("_", StringComparison.Ordinal)) ReportDiagnostic(context, classDeclaration.Identifier.GetLocation());
+        if (name.StartsWith("_", StringComparison.Ordinal))
+            ReportDiagnostic(context, classDeclaration.Identifier.GetLocation());
     }
 
     private void AnalyzeInterfaceDeclaration(SyntaxNodeAnalysisContext context)
@@ -80,6 +86,7 @@ public class DoNotUseUnderscorePrefixInNamesAnalyzer() : BaseAnalyzer(Diagnostic
         var interfaceDeclaration = (InterfaceDeclarationSyntax)context.Node;
         var name                 = interfaceDeclaration.Identifier.Text;
 
-        if (name.StartsWith("_", StringComparison.Ordinal)) ReportDiagnostic(context, interfaceDeclaration.Identifier.GetLocation());
+        if (name.StartsWith("_", StringComparison.Ordinal))
+            ReportDiagnostic(context, interfaceDeclaration.Identifier.GetLocation());
     }
 }
