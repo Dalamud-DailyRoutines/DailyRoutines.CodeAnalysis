@@ -67,6 +67,23 @@ public class ControlStatementBlockUsageAnalyzer : DiagnosticAnalyzer
             return;
         }
 
+        // 特殊处理链式using语句
+        if (node is UsingStatementSyntax && body is not BlockSyntax)
+        {
+            // 如果当前using语句的语句体也是using语句（链式using）
+            if (body is UsingStatementSyntax)
+            {
+                var finalStatement = GetFinalStatementInUsingChain(body);
+                
+                // 如果最终语句是单行语句，则整个链式using都不需要大括号
+                if (finalStatement != null && IsSimpleStatement(finalStatement) && IsSingleLineLogic(finalStatement) && !ContainsLambdaBlock(finalStatement))
+                    return;
+                
+                // 否则，只有最后一个using语句需要添加大括号，而当前using是链中的非最后一个，不需要报告诊断
+                return;
+            }
+        }
+
         // 情况1：检查语句体是否是一个块，且块内只有一个语句 - 单行不应使用大括号
         if (body is BlockSyntax { Statements.Count: 1 } blockSyntax) 
         {
@@ -209,5 +226,29 @@ public class ControlStatementBlockUsageAnalyzer : DiagnosticAnalyzer
         }
         
         return false;
+    }
+    
+    /// <summary>
+    /// 获取链式using语句中的最终非using语句
+    /// </summary>
+    /// <param name="statement">链式using语句的起始语句</param>
+    /// <returns>链式using语句中的最终非using语句，如果全部是using则返回最后一个using的语句体</returns>
+    private static StatementSyntax GetFinalStatementInUsingChain(StatementSyntax statement)
+    {
+        // 递归查找链中的最后一个语句
+        while (statement is UsingStatementSyntax usingStatement)
+        {
+            // 如果语句体是块，找到块中的最后一个语句
+            if (usingStatement.Statement is BlockSyntax blockSyntax && blockSyntax.Statements.Count > 0)
+                statement = blockSyntax.Statements.Last();
+            else
+                statement = usingStatement.Statement;
+            
+            // 如果语句为null，中断循环
+            if (statement == null)
+                break;
+        }
+        
+        return statement;
     }
 }
