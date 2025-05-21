@@ -31,7 +31,7 @@ public class DoNotUseUnderscorePrefixInNamesAnalyzer() : BaseAnalyzer(Diagnostic
         var variableDeclarator = (VariableDeclaratorSyntax)context.Node;
         var name               = variableDeclarator.Identifier.Text;
 
-        if (name.StartsWith("_", StringComparison.Ordinal))
+        if (ShouldReportUnderscorePrefix(name))
             ReportDiagnostic(context, variableDeclarator.Identifier.GetLocation());
     }
 
@@ -40,7 +40,7 @@ public class DoNotUseUnderscorePrefixInNamesAnalyzer() : BaseAnalyzer(Diagnostic
         var parameter = (ParameterSyntax)context.Node;
         var name      = parameter.Identifier.Text;
 
-        if (name.StartsWith("_", StringComparison.Ordinal))
+        if (ShouldReportUnderscorePrefix(name))
             ReportDiagnostic(context, parameter.Identifier.GetLocation());
     }
 
@@ -49,7 +49,7 @@ public class DoNotUseUnderscorePrefixInNamesAnalyzer() : BaseAnalyzer(Diagnostic
         var methodDeclaration = (MethodDeclarationSyntax)context.Node;
         var name              = methodDeclaration.Identifier.Text;
 
-        if (name.StartsWith("_", StringComparison.Ordinal))
+        if (ShouldReportUnderscorePrefix(name))
             ReportDiagnostic(context, methodDeclaration.Identifier.GetLocation());
     }
 
@@ -58,7 +58,7 @@ public class DoNotUseUnderscorePrefixInNamesAnalyzer() : BaseAnalyzer(Diagnostic
         var propertyDeclaration = (PropertyDeclarationSyntax)context.Node;
         var name                = propertyDeclaration.Identifier.Text;
 
-        if (name.StartsWith("_", StringComparison.Ordinal))
+        if (ShouldReportUnderscorePrefix(name))
             ReportDiagnostic(context, propertyDeclaration.Identifier.GetLocation());
     }
 
@@ -67,7 +67,7 @@ public class DoNotUseUnderscorePrefixInNamesAnalyzer() : BaseAnalyzer(Diagnostic
         var fieldDeclaration = (FieldDeclarationSyntax)context.Node;
         foreach (var variable in from variable in fieldDeclaration.Declaration.Variables
                  let name = variable.Identifier.Text
-                 where name.StartsWith("_", StringComparison.Ordinal)
+                 where ShouldReportUnderscorePrefix(name)
                  select variable)
             ReportDiagnostic(context, variable.Identifier.GetLocation());
     }
@@ -77,7 +77,7 @@ public class DoNotUseUnderscorePrefixInNamesAnalyzer() : BaseAnalyzer(Diagnostic
         var classDeclaration = (ClassDeclarationSyntax)context.Node;
         var name             = classDeclaration.Identifier.Text;
 
-        if (name.StartsWith("_", StringComparison.Ordinal))
+        if (ShouldReportUnderscorePrefix(name))
             ReportDiagnostic(context, classDeclaration.Identifier.GetLocation());
     }
 
@@ -86,7 +86,21 @@ public class DoNotUseUnderscorePrefixInNamesAnalyzer() : BaseAnalyzer(Diagnostic
         var interfaceDeclaration = (InterfaceDeclarationSyntax)context.Node;
         var name                 = interfaceDeclaration.Identifier.Text;
 
-        if (name.StartsWith("_", StringComparison.Ordinal))
+        if (ShouldReportUnderscorePrefix(name))
             ReportDiagnostic(context, interfaceDeclaration.Identifier.GetLocation());
+    }
+
+    /// <summary>
+    /// 判断是否应该报告下划线前缀的问题
+    /// </summary>
+    /// <param name="name">标识符名称</param>
+    /// <returns>如果应该报告则返回true，否则返回false</returns>
+    private static bool ShouldReportUnderscorePrefix(string name)
+    {
+        // 排除单独一个下划线的情况（C#中通常用作弃元标识符）
+        if (name == "_")
+            return false;
+            
+        return name.StartsWith("_", StringComparison.Ordinal);
     }
 }

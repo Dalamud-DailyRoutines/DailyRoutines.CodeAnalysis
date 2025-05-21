@@ -90,5 +90,17 @@ namespace DailyRoutines.CodeAnalysis.Common
             defaultSeverity: DiagnosticSeverity.Warning,
             description: "为了保持代码风格一致性，二元运算符（如 &&, ||, +, -, *, /, |, &）应放在行尾而不是行首。"
         );
+
+        /// <summary>
+        /// 诊断规则：命名必须遵循驼峰命名法
+        /// </summary>
+        public static readonly DiagnosticDescriptor NameMustFollowCamelCaseConvention = DiagnosticDescriptorFactory.Create(
+            id: "0008",
+            title: "命名必须遵循驼峰命名法",
+            messageFormat: "标识符 '{0}' 不符合驼峰命名法(大驼峰或小驼峰均可)",
+            category: DiagnosticCategories.Naming,
+            defaultSeverity: DiagnosticSeverity.Warning,
+            description: "为了保持代码风格一致性，所有命名必须遵循驼峰命名法(大驼峰或小驼峰均可)。"
+        );
     }
 } 
