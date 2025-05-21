@@ -77,6 +77,13 @@ public class ControlStatementBodyMustBeOnNewLineAnalyzer() : BaseAnalyzer(Diagno
     {
         if (statement == null) return;
 
+        // 对于一些特定的简单跳转语句，允许它们出现在控制语句的同一行
+        if (IsExemptedStatementType(statement))
+        {
+            // 这些语句类型可以和控制语句在同一行，不报告诊断问题
+            return;
+        }
+
         // 获取前置标记和语句体的位置信息
         var precedingTokenLine = precedingToken.GetLocation().GetLineSpan().EndLinePosition.Line;
         var statementStartLine = statement.GetLocation().GetLineSpan().StartLinePosition.Line;
@@ -86,6 +93,24 @@ public class ControlStatementBodyMustBeOnNewLineAnalyzer() : BaseAnalyzer(Diagno
         {
             ReportDiagnostic(context, statement.GetLocation(), statementType);
         }
+    }
+
+    // 检查是否是豁免的语句类型（允许与控制语句在同一行）
+    private bool IsExemptedStatementType(StatementSyntax statement)
+    {
+        return statement switch
+        {
+            // 允许 return 语句
+            ReturnStatementSyntax => true,
+            // 允许 continue 语句
+            ContinueStatementSyntax => true,
+            // 允许 break 语句
+            BreakStatementSyntax => true,
+            // 允许 goto 语句
+            GotoStatementSyntax => true,
+            // 其他所有语句类型都需要遵循规则
+            _ => false
+        };
     }
 
     private string GetStatementTypeName(SyntaxKind kind)
