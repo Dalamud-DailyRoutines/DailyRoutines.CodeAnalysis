@@ -51,6 +51,11 @@ public class ControlStatementBodyMustBeOnNewLineCodeFixProvider : BaseCodeFixPro
         var parentNode = statement.Parent;
         if (parentNode == null) return document;
 
+        // 获取父节点的缩进
+        string parentIndentation = GetIndentationWhitespace(parentNode);
+        // 标准缩进是4个空格
+        string additionalIndentation = "    ";
+
         // 根据不同的控制语句类型进行处理
         SyntaxNode newParentNode = null;
 
@@ -58,11 +63,11 @@ public class ControlStatementBodyMustBeOnNewLineCodeFixProvider : BaseCodeFixPro
         {
             case IfStatementSyntax ifStatement:
             {
-                // 为语句添加换行和缩进
+                // 为语句添加换行和缩进，保留原有的缩进并添加4个空格作为额外缩进
                 var newStatement = statement.WithLeadingTrivia(
                     SyntaxFactory.TriviaList(
                         SyntaxFactory.EndOfLine("\r\n"),
-                        SyntaxFactory.Whitespace("    "))); // 4个空格的缩进
+                        SyntaxFactory.Whitespace(parentIndentation + additionalIndentation))); 
 
                 newParentNode = ifStatement.WithStatement(newStatement);
                 break;
@@ -72,7 +77,7 @@ public class ControlStatementBodyMustBeOnNewLineCodeFixProvider : BaseCodeFixPro
                 var newStatement = statement.WithLeadingTrivia(
                     SyntaxFactory.TriviaList(
                         SyntaxFactory.EndOfLine("\r\n"),
-                        SyntaxFactory.Whitespace("    ")));
+                        SyntaxFactory.Whitespace(parentIndentation + additionalIndentation)));
 
                 newParentNode = elseClause.WithStatement(newStatement);
                 break;
@@ -82,17 +87,18 @@ public class ControlStatementBodyMustBeOnNewLineCodeFixProvider : BaseCodeFixPro
                 var newStatement = statement.WithLeadingTrivia(
                     SyntaxFactory.TriviaList(
                         SyntaxFactory.EndOfLine("\r\n"),
-                        SyntaxFactory.Whitespace("    ")));
+                        SyntaxFactory.Whitespace(parentIndentation + additionalIndentation)));
 
                 newParentNode = forStatement.WithStatement(newStatement);
                 break;
             }
+            
             case ForEachStatementSyntax forEachStatement:
             {
                 var newStatement = statement.WithLeadingTrivia(
                     SyntaxFactory.TriviaList(
                         SyntaxFactory.EndOfLine("\r\n"),
-                        SyntaxFactory.Whitespace("    ")));
+                        SyntaxFactory.Whitespace(parentIndentation + additionalIndentation)));
 
                 newParentNode = forEachStatement.WithStatement(newStatement);
                 break;
@@ -102,7 +108,7 @@ public class ControlStatementBodyMustBeOnNewLineCodeFixProvider : BaseCodeFixPro
                 var newStatement = statement.WithLeadingTrivia(
                     SyntaxFactory.TriviaList(
                         SyntaxFactory.EndOfLine("\r\n"),
-                        SyntaxFactory.Whitespace("    ")));
+                        SyntaxFactory.Whitespace(parentIndentation + additionalIndentation)));
 
                 newParentNode = whileStatement.WithStatement(newStatement);
                 break;
@@ -112,7 +118,7 @@ public class ControlStatementBodyMustBeOnNewLineCodeFixProvider : BaseCodeFixPro
                 var newStatement = statement.WithLeadingTrivia(
                     SyntaxFactory.TriviaList(
                         SyntaxFactory.EndOfLine("\r\n"),
-                        SyntaxFactory.Whitespace("    ")));
+                        SyntaxFactory.Whitespace(parentIndentation + additionalIndentation)));
 
                 newParentNode = doStatement.WithStatement(newStatement);
                 break;
@@ -122,7 +128,7 @@ public class ControlStatementBodyMustBeOnNewLineCodeFixProvider : BaseCodeFixPro
                 var newStatement = statement.WithLeadingTrivia(
                     SyntaxFactory.TriviaList(
                         SyntaxFactory.EndOfLine("\r\n"),
-                        SyntaxFactory.Whitespace("    ")));
+                        SyntaxFactory.Whitespace(parentIndentation + additionalIndentation)));
 
                 newParentNode = usingStatement.WithStatement(newStatement);
                 break;
@@ -132,7 +138,7 @@ public class ControlStatementBodyMustBeOnNewLineCodeFixProvider : BaseCodeFixPro
                 var newStatement = statement.WithLeadingTrivia(
                     SyntaxFactory.TriviaList(
                         SyntaxFactory.EndOfLine("\r\n"),
-                        SyntaxFactory.Whitespace("    ")));
+                        SyntaxFactory.Whitespace(parentIndentation + additionalIndentation)));
 
                 newParentNode = lockStatement.WithStatement(newStatement);
                 break;
@@ -146,5 +152,40 @@ public class ControlStatementBodyMustBeOnNewLineCodeFixProvider : BaseCodeFixPro
 
         // 应用格式化
         return document.WithSyntaxRoot(newRoot);
+    }
+
+    /// <summary>
+    /// 从节点的前导三项符中提取缩进空白
+    /// </summary>
+    /// <param name="node">需要提取缩进的节点</param>
+    /// <returns>该节点的缩进空白字符串</returns>
+    private static string GetIndentationWhitespace(SyntaxNode node)
+    {
+        // 获取节点的所有前导trivia
+        var leadingTrivia = node.GetLeadingTrivia();
+        
+        // 查找最后一个换行符后面的空白
+        for (int i = leadingTrivia.Count - 1; i >= 0; i--)
+        {
+            if (leadingTrivia[i].IsKind(SyntaxKind.EndOfLineTrivia))
+            {
+                // 找到换行符，看它后面是否有空白
+                if (i + 1 < leadingTrivia.Count && leadingTrivia[i + 1].IsKind(SyntaxKind.WhitespaceTrivia))
+                {
+                    return leadingTrivia[i + 1].ToString();
+                }
+                // 找到换行符但后面没有空白，返回空字符串
+                return string.Empty;
+            }
+        }
+        
+        // 没有找到换行符，尝试直接获取开头的空白
+        if (leadingTrivia.Count > 0 && leadingTrivia[0].IsKind(SyntaxKind.WhitespaceTrivia))
+        {
+            return leadingTrivia[0].ToString();
+        }
+        
+        // 没有找到任何缩进
+        return string.Empty;
     }
 }
