@@ -33,9 +33,9 @@ namespace DailyRoutines.CodeAnalysis.Common
             bool isEnabledByDefault = true)
         {
             // 确保ID格式标准化：DR#### 形式
-            string diagnosticId = id.StartsWith(DiagnosticIdPrefix, System.StringComparison.Ordinal)
-                ? id
-                : $"{DiagnosticIdPrefix}{id.PadLeft(4, '0')}";
+            var diagnosticId = id.StartsWith(DiagnosticIdPrefix, System.StringComparison.Ordinal)
+                                   ? id
+                                   : $"{DiagnosticIdPrefix}{id.PadLeft(4, '0')}";
 
             return new DiagnosticDescriptor(
                 diagnosticId,
@@ -44,18 +44,8 @@ namespace DailyRoutines.CodeAnalysis.Common
                 category,
                 defaultSeverity,
                 isEnabledByDefault,
-                description: description ?? title,
-                helpLinkUri: GetHelpLink(diagnosticId)
+                description: description ?? title
             );
-        }
-
-        /// <summary>
-        /// 获取规则帮助链接（可以指向文档网站）
-        /// </summary>
-        private static string GetHelpLink(string diagnosticId)
-        {
-            // 可以根据需要实现自定义的帮助文档链接
-            return $"https://github.com/YourOrganization/DailyRoutines/wiki/rules/{diagnosticId}";
         }
     }
 } 
