@@ -78,5 +78,17 @@ namespace DailyRoutines.CodeAnalysis.Common
             defaultSeverity: DiagnosticSeverity.Warning,
             description: "这是一个示例规则，用于模板演示目的。当需要添加新规则时，复制并修改此模式。"
         );
+        
+        /// <summary>
+        /// 诊断规则：二元运算符必须在行尾而不是行首
+        /// </summary>
+        public static readonly DiagnosticDescriptor BinaryOperatorsMustBeAtEndOfLine = DiagnosticDescriptorFactory.Create(
+            id: "0007",
+            title: "二元运算符必须在行尾而不是行首",
+            messageFormat: "二元运算符 '{0}' 应放在行尾而不是行首",
+            category: DiagnosticCategories.Design,
+            defaultSeverity: DiagnosticSeverity.Warning,
+            description: "为了保持代码风格一致性，二元运算符（如 &&, ||, +, -, *, /, |, &）应放在行尾而不是行首。"
+        );
     }
 } 
