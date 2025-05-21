@@ -60,6 +60,13 @@ public class ControlStatementBlockUsageAnalyzer : DiagnosticAnalyzer
             _                                       => body
         };
 
+        // 特殊处理else if结构
+        if (node is ElseClauseSyntax elseClauseNode && elseClauseNode.Statement is IfStatementSyntax)
+        {
+            // else if结构不需要单独报告诊断，交由if语句本身进行检查
+            return;
+        }
+
         // 情况1：检查语句体是否是一个块，且块内只有一个语句 - 单行不应使用大括号
         if (body is BlockSyntax { Statements.Count: 1 } blockSyntax) 
         {
