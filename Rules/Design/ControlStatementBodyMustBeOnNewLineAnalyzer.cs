@@ -40,7 +40,13 @@ public class ControlStatementBodyMustBeOnNewLineAnalyzer() : BaseAnalyzer(Diagno
                 CheckStatement(context, ifStatement.Statement, ifStatement.CloseParenToken, statementType);
                 break;
             case ElseClauseSyntax elseClause:
-                CheckStatement(context, elseClause.Statement, elseClause.ElseKeyword, statementType);
+                // 特殊处理 else if 结构，这种情况下不要求将if移到新行
+                if (elseClause.Statement is IfStatementSyntax)
+                {
+                    // else if 结构是允许的，不检查
+                }
+                else
+                    CheckStatement(context, elseClause.Statement, elseClause.ElseKeyword, statementType);
                 break;
             case ForStatementSyntax forStatement:
                 CheckStatement(context, forStatement.Statement, forStatement.CloseParenToken, statementType);
