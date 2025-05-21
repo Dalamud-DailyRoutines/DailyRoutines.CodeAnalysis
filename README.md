@@ -22,8 +22,8 @@ DailyRoutines.CodeAnalysis/
 │   ├── Design/                 # 设计规则相关
 │   │   ├── ControlStatementBodyMustBeOnNewLineAnalyzer.cs
 │   │   ├── ControlStatementBodyMustBeOnNewLineCodeFixProvider.cs
-│   │   ├── SingleLineControlStatementMustNotUseBlockAnalyzer.cs
-│   │   └── SingleLineControlStatementMustNotUseBlockCodeFixProvider.cs
+│   │   ├── ControlStatementBlockUsageAnalyzer.cs
+│   │   └── ControlStatementBlockUsageCodeFixProvider.cs
 │   └── Performance/            # 性能规则相关（待添加）
 └── Templates/                  # 规则模板
     ├── TemplateAnalyzer.cs     # 分析器模板
@@ -37,7 +37,8 @@ DailyRoutines.CodeAnalysis/
 | DR0001 | 用法 | 使用 `nint` 代替 `IntPtr` | 警告 |
 | DR0002 | 命名 | 不允许命名以下划线开头 | 警告 |
 | DR0004 | 设计 | 控制语句的语句体必须另起一行 | 警告 |
-| DR0005 | 设计 | 只有一行代码的控制语句不应使用大括号 | 警告 |
+| DR0005 | 设计 | 只包含简单单行语句的控制语句不应使用大括号 | 警告 |
+| DR0006 | 设计 | 包含多行语句或控制流语句的控制语句必须使用大括号 | 警告 |
 
 ## 添加新规则
 

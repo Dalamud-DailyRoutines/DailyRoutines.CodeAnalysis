@@ -56,6 +56,18 @@ namespace DailyRoutines.CodeAnalysis.Common
         );
         
         /// <summary>
+        /// 诊断规则：多行代码的控制语句必须使用大括号
+        /// </summary>
+        public static readonly DiagnosticDescriptor MultiLineControlStatementMustUseBlock = DiagnosticDescriptorFactory.Create(
+            id: "0006",
+            title: "多行代码的控制语句必须使用大括号",
+            messageFormat: "多行代码的{0}语句必须使用大括号",
+            category: DiagnosticCategories.Design,
+            defaultSeverity: DiagnosticSeverity.Warning,
+            description: "为了保持代码结构清晰，多行代码或包含嵌套控制语句的控制语句(如if、foreach等)必须使用大括号。"
+        );
+        
+        /// <summary>
         /// 示例诊断规则 - 仅用于模板演示
         /// </summary>
         public static readonly DiagnosticDescriptor ExampleRule = DiagnosticDescriptorFactory.Create(
