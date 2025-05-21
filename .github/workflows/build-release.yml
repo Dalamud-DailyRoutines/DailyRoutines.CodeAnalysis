@@ -1,0 +1,56 @@
+name: Build and Release NuGet Package
+
+on  :
+    push             :
+        branches: [ master ]
+    workflow_dispatch:
+
+jobs:
+    build-and-release:
+        runs-on: windows-latest
+
+        steps  :
+            -   name: Checkout repository
+                uses: actions/checkout@v4
+
+            -   name: Setup .NET 9.0 SDK
+                uses: actions/setup-dotnet@v4
+                with:
+                    dotnet-version: '9.0'
+
+            -   name: Restore dependencies
+                run : dotnet restore
+
+            -   name : Extract PackageVersion
+                id   : get_version
+                shell: pwsh
+                run  : |
+                    $proj = Get-Content *.csproj | Out-String
+                    $version = [regex]::Match($proj, '<PackageVersion>(.*?)</PackageVersion>').Groups[1].Value
+                    echo "Detected version: $version"
+                    echo "version=$version" >> $env:GITHUB_OUTPUT
+
+            -   name: Build solution
+                run : dotnet build --configuration Release --no-restore
+
+            -   name: Pack NuGet package
+                run : dotnet pack --configuration Release --no-build
+
+            -   name: Create GitHub Release
+                id  : create_release
+                uses: actions/create-release@v1
+                with:
+                    tag_name    : v${{ steps.get_version.outputs.version }}
+                    release_name: Release v${{ steps.get_version.outputs.version }}
+                    draft       : false
+                    prerelease  : false
+                env :
+                    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+            -   name: Upload Release Asset (.nupkg)
+                uses: actions/upload-release-asset@v1
+                with:
+                    upload_url        : ${{ steps.create_release.outputs.upload_url }}
+                    asset_path        : ./bin/Release/DailyRoutines.CodeAnalysis.${{ steps.get_version.outputs.version }}.nupkg
+                    asset_name        : DailyRoutines.CodeAnalysis.${{ steps.get_version.outputs.version }}.nupkg
+                    asset_content_type: application/zip
