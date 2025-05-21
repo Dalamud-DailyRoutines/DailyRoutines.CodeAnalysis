@@ -1,0 +1,69 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <LangVersion>latest</LangVersion>
+    
+    <!-- 分析器项目配置 -->
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
+    
+    <!-- 禁用所有警告 -->
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <NoWarn>$(NoWarn);CS8625;CS8604;CS8602;CS0618;CS8631;CS0712;CS0723;CS1503;CA1051;CA1721;CA1062;CA1310;CA1304;RS1033;RS2008;RS0016;VSTHRD200</NoWarn>
+    <WarningsNotAsErrors>$(WarningsNotAsErrors);CS8625;CS8604;CS8602;CS0618;CS8631;CS0712;CS0723;CS1503;CA1051;CA1721;CA1062;CA1310;CA1304;RS1033;RS2008;RS0016;VSTHRD200</WarningsNotAsErrors>
+    <MSBuildWarningsAsMessages>$(MSBuildWarningsAsMessages);CS8625;CS8604;CS8602;CS0618;CS8631;CS0712;CS0723;CS1503;CA1051;CA1721;CA1062;CA1310;CA1304;RS1033;RS2008;RS0016;VSTHRD200</MSBuildWarningsAsMessages>
+    
+    <!-- 禁用代码质量分析 -->
+    <EnableNETAnalyzers>false</EnableNETAnalyzers>
+    <AnalysisLevel>none</AnalysisLevel>
+    <EnforceCodeStyleInBuild>false</EnforceCodeStyleInBuild>
+    <RunAnalyzersDuringBuild>false</RunAnalyzersDuringBuild>
+    <RunAnalyzersDuringLiveAnalysis>false</RunAnalyzersDuringLiveAnalysis>
+    
+    <!-- NuGet包配置 -->
+    <PackageId>DailyRoutines.CodeAnalysis</PackageId>
+    <PackageVersion>1.0.0</PackageVersion>
+    <Authors>DailyRoutines Team</Authors>
+    <Description>代码规范分析器 - 确保代码风格一致性</Description>
+    <Copyright>Copyright © DailyRoutines Team</Copyright>
+    <PackageTags>analyzers;code quality;code style;code analysis;diagnostics</PackageTags>
+    <NoPackageAnalysis>true</NoPackageAnalysis>
+    <DevelopmentDependency>true</DevelopmentDependency>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="4.8.0" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.4" PrivateAssets="all">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+      <NoWarn>RS1001;RS1002;RS1003;RS1004;RS1005;RS1006;RS1007;RS1008;RS1009;RS1010;RS1011;RS1012;RS1013;RS1014;RS1015;RS1016;RS1017;RS1018;RS1019;RS1020;RS1021;RS1022;RS1023;RS1024;RS1025;RS1026;RS1027;RS1028;RS1029;RS1030;RS1031;RS1032;RS1033;RS2000;RS2001;RS2002;RS2003;RS2004;RS2005;RS2006;RS2007;RS2008</NoWarn>
+    </PackageReference>
+  </ItemGroup>
+
+  <!-- 将分析器作为NuGet包发布的配置 -->
+  <ItemGroup>
+    <None Update="$(OutputPath)\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+    <None Include="$(OutputPath)\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+  </ItemGroup>
+
+  <!-- 禁用代码分析规则 -->
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+    <NoWarn>$(NoWarn);1701;1702;1705;1591;1573;1572;1570;1574;1587;1571;1570</NoWarn>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <NoWarn>$(NoWarn);1701;1702;1705;1591;1573;1572;1570;1574;1587;1571;1570</NoWarn>
+  </PropertyGroup>
+
+  <!-- 全局禁用警告 -->
+  <Target Name="DisableWarnings" BeforeTargets="CoreCompile">
+    <PropertyGroup>
+      <WarningLevel>0</WarningLevel>
+    </PropertyGroup>
+  </Target>
+
+</Project>

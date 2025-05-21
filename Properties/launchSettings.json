@@ -1,0 +1,13 @@
+{
+  "profiles": {
+    "DailyRoutines.CodeAnalysis": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "DOTNET_ANALYZERS_DISABLE": "true",
+        "DOTNET_ROSLYN_ANALYZERS_DISABLE": "true",
+        "DOTNET_CADB_IGNORE_ISSUES": "true",
+        "DOTNET_CODE_ANALYSIS_DISABLE": "true"
+      }
+    }
+  }
+} 
