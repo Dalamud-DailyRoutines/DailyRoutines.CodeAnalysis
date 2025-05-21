@@ -27,12 +27,18 @@
     <PackageId>DailyRoutines.CodeAnalysis</PackageId>
     <PackageVersion>1.0.0</PackageVersion>
     <Authors>DailyRoutines Team</Authors>
-    <Description>代码规范分析器 - 确保代码风格一致性</Description>
+    <Description>适用于 Daily Routines 项目的代码规范分析器</Description>
     <Copyright>Copyright © DailyRoutines Team</Copyright>
     <PackageTags>analyzers;code quality;code style;code analysis;diagnostics</PackageTags>
     <NoPackageAnalysis>true</NoPackageAnalysis>
     <DevelopmentDependency>true</DevelopmentDependency>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    
+    <!-- 许可证配置 -->
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <RepositoryUrl>https://github.com/Dalamud-DailyRoutines/DailyRoutines.CodeAnalysis</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
   </PropertyGroup>
 
   <ItemGroup>
@@ -48,6 +54,9 @@
   <ItemGroup>
     <None Update="$(OutputPath)\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
     <None Include="$(OutputPath)\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+    <!-- 包含README和LICENSE文件 -->
+    <None Include="README.md" Pack="true" PackagePath="\" />
+    <None Include="LICENSE" Pack="true" PackagePath="\" />
   </ItemGroup>
 
   <!-- 禁用代码分析规则 -->
