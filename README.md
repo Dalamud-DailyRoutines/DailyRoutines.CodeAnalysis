@@ -25,7 +25,9 @@ DailyRoutines.CodeAnalysis/
 │   │   ├── ControlStatementBlockUsageAnalyzer.cs
 │   │   ├── ControlStatementBlockUsageCodeFixProvider.cs
 │   │   ├── BinaryOperatorsMustBeAtEndOfLineAnalyzer.cs
-│   │   └── BinaryOperatorsMustBeAtEndOfLineCodeFixProvider.cs
+│   │   ├── BinaryOperatorsMustBeAtEndOfLineCodeFixProvider.cs
+│   │   ├── ConfigurationClassesMustNotUseReadonlyFieldsAnalyzer.cs
+│   │   └── ConfigurationClassesMustNotUseReadonlyFieldsCodeFixProvider.cs
 │   └── Performance/            # 性能规则相关（待添加）
 └── Templates/                  # 规则模板
     ├── TemplateAnalyzer.cs     # 分析器模板
@@ -42,6 +44,7 @@ DailyRoutines.CodeAnalysis/
 | DR0005 | 设计 | 只包含简单单行语句的控制语句不应使用大括号 | 警告 |
 | DR0006 | 设计 | 包含多行语句或控制流语句的控制语句必须使用大括号 | 警告 |
 | DR0007 | 设计 | 二元运算符必须在行尾而不是行首 | 警告 |
+| DR0008 | 设计 | 继承自 `ManagerConfiguration` 或 `ModuleConfiguration` 的类中不允许使用 `readonly` 修饰符 | 警告 |
 
 ## 添加新规则
 

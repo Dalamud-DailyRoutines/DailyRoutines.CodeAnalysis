@@ -90,5 +90,17 @@ namespace DailyRoutines.CodeAnalysis.Common
             defaultSeverity: DiagnosticSeverity.Warning,
             description: "为了保持代码风格一致性，二元运算符（如 &&, ||, +, -, *, /, |, &）应放在行尾而不是行首。"
         );
+        
+        /// <summary>
+        /// 诊断规则：配置类中不允许使用 readonly 字段
+        /// </summary>
+        public static readonly DiagnosticDescriptor ConfigurationClassesMustNotUseReadonlyFields = DiagnosticDescriptorFactory.Create(
+            id: "0008",
+            title: "配置类中不允许使用 readonly 字段",
+            messageFormat: "继承自{0}的类中不应使用 readonly 修饰符",
+            category: DiagnosticCategories.Design,
+            defaultSeverity: DiagnosticSeverity.Warning,
+            description: "为了保持配置类的一致性和可扩展性，继承自 ManagerConfiguration 或 ModuleConfiguration 的类中不应使用 readonly 修饰符。"
+        );
     }
-} 
+}
