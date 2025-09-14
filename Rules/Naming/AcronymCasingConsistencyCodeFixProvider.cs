@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Composition;
@@ -92,18 +93,60 @@ public class AcronymCasingConsistencyCodeFixProvider : BaseCodeFixProvider
     /// <returns>修复后的名称</returns>
     private static string FixAcronymCasing(string name, bool useUpperCase)
     {
-        var result = name;
+        // 将驼峰命名分割成单词
+        var words = SplitCamelCase(name);
+        var fixedWords = new List<string>();
 
-        foreach (var acronym in AcronymConstants.CommonAcronyms)
+        foreach (var word in words)
         {
-            // 使用正则表达式查找并替换缩写
-            var pattern = $@"\b{Regex.Escape(acronym)}\b";
-            var replacement = useUpperCase ? acronym.ToUpperInvariant() : acronym.ToLowerInvariant();
+            var fixedWord = word;
             
-            result = Regex.Replace(result, pattern, replacement, RegexOptions.IgnoreCase);
+            // 检查每个单词是否完全匹配缩写列表（忽略大小写）
+            foreach (var acronym in AcronymConstants.CommonAcronyms)
+            {
+                if (string.Equals(word, acronym, StringComparison.OrdinalIgnoreCase))
+                {
+                    fixedWord = useUpperCase ? acronym.ToUpperInvariant() : acronym.ToLowerInvariant();
+                    break;
+                }
+            }
+            
+            fixedWords.Add(fixedWord);
         }
 
-        return result;
+        // 重新组合单词
+        return string.Join("", fixedWords);
+    }
+
+    /// <summary>
+    /// 将驼峰命名分割成单词
+    /// </summary>
+    /// <param name="name">标识符名称</param>
+    /// <returns>分割后的单词列表</returns>
+    private static List<string> SplitCamelCase(string name)
+    {
+        var words = new List<string>();
+        if (string.IsNullOrEmpty(name))
+            return words;
+
+        // 使用正则表达式分割驼峰命名
+        // 匹配模式：
+        // 1. 连续的大写字母后跟小写字母：XMLHttp -> XML, Http
+        // 2. 小写字母后跟大写字母：iconId -> icon, Id
+        // 3. 数字和字母的分界
+        // 4. 下划线分隔
+        var pattern = @"(?<!^)(?=[A-Z][a-z])|(?<=[a-z])(?=[A-Z])|(?<=[0-9])(?=[A-Za-z])|(?<=[A-Za-z])(?=[0-9])|_";
+        var parts = Regex.Split(name, pattern);
+
+        foreach (var part in parts)
+        {
+            if (!string.IsNullOrEmpty(part) && part != "_")
+            {
+                words.Add(part);
+            }
+        }
+
+        return words;
     }
 
     /// <summary>

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis;
@@ -135,31 +136,60 @@ public class AcronymCasingConsistencyAnalyzer() : BaseAnalyzer(DiagnosticRules.A
     {
         var result = new List<(string, string, string)>();
 
-        foreach (var acronym in AcronymConstants.CommonAcronyms)
+        // 将驼峰命名分割成单词
+        var words = SplitCamelCase(name);
+
+        foreach (var word in words)
         {
-            // 使用更智能的正则表达式来匹配驼峰命名中的缩写
-            // 匹配以下情况：
-            // 1. 字符串开头的缩写：^Id, ^API
-            // 2. 小写字母后的缩写（驼峰命名）：iconId, httpAPI
-            // 3. 大写字母后的缩写：HttpAPI, XMLHttpRequest
-            // 4. 传统单词边界：some_id, some-api
-            var pattern = $@"(?:^|(?<=[a-z])|(?<=[A-Z])|(?<=\b)){Regex.Escape(acronym)}(?=\b|(?=[A-Z])|(?=[a-z])|$)";
-            var matches = Regex.Matches(name, pattern, RegexOptions.IgnoreCase);
-
-            foreach (Match match in matches)
+            // 检查每个单词是否完全匹配缩写列表（忽略大小写）
+            foreach (var acronym in AcronymConstants.CommonAcronyms)
             {
-                var foundAcronym = match.Value;
-                var upperCase = acronym.ToUpperInvariant();
-                var lowerCase = acronym.ToLowerInvariant();
-
-                // 检查是否为混合大小写（既不是全大写也不是全小写）
-                if (foundAcronym != upperCase && foundAcronym != lowerCase)
+                if (string.Equals(word, acronym, StringComparison.OrdinalIgnoreCase))
                 {
-                    result.Add((foundAcronym, upperCase, lowerCase));
+                    var upperCase = acronym.ToUpperInvariant();
+                    var lowerCase = acronym.ToLowerInvariant();
+
+                    // 检查是否为混合大小写（既不是全大写也不是全小写）
+                    if (word != upperCase && word != lowerCase)
+                    {
+                        result.Add((word, upperCase, lowerCase));
+                    }
+                    break; // 找到匹配后跳出内层循环
                 }
             }
         }
 
         return result;
+    }
+
+    /// <summary>
+    /// 将驼峰命名分割成单词
+    /// </summary>
+    /// <param name="name">标识符名称</param>
+    /// <returns>分割后的单词列表</returns>
+    private static List<string> SplitCamelCase(string name)
+    {
+        var words = new List<string>();
+        if (string.IsNullOrEmpty(name))
+            return words;
+
+        // 使用正则表达式分割驼峰命名
+        // 匹配模式：
+        // 1. 连续的大写字母后跟小写字母：XMLHttp -> XML, Http
+        // 2. 小写字母后跟大写字母：iconId -> icon, Id
+        // 3. 数字和字母的分界
+        // 4. 下划线分隔
+        var pattern = @"(?<!^)(?=[A-Z][a-z])|(?<=[a-z])(?=[A-Z])|(?<=[0-9])(?=[A-Za-z])|(?<=[A-Za-z])(?=[0-9])|_";
+        var parts = Regex.Split(name, pattern);
+
+        foreach (var part in parts)
+        {
+            if (!string.IsNullOrEmpty(part) && part != "_")
+            {
+                words.Add(part);
+            }
+        }
+
+        return words;
     }
 }
