@@ -137,8 +137,13 @@ public class AcronymCasingConsistencyAnalyzer() : BaseAnalyzer(DiagnosticRules.A
 
         foreach (var acronym in AcronymConstants.CommonAcronyms)
         {
-            // 使用正则表达式查找缩写，确保它是完整的单词边界
-            var pattern = $@"\b{Regex.Escape(acronym)}\b";
+            // 使用更智能的正则表达式来匹配驼峰命名中的缩写
+            // 匹配以下情况：
+            // 1. 字符串开头的缩写：^Id, ^API
+            // 2. 小写字母后的缩写（驼峰命名）：iconId, httpAPI
+            // 3. 大写字母后的缩写：HttpAPI, XMLHttpRequest
+            // 4. 传统单词边界：some_id, some-api
+            var pattern = $@"(?:^|(?<=[a-z])|(?<=[A-Z])|(?<=\b)){Regex.Escape(acronym)}(?=\b|(?=[A-Z])|(?=[a-z])|$)";
             var matches = Regex.Matches(name, pattern, RegexOptions.IgnoreCase);
 
             foreach (Match match in matches)
