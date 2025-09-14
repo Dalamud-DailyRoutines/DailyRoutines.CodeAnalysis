@@ -102,5 +102,17 @@ namespace DailyRoutines.CodeAnalysis.Common
             defaultSeverity: DiagnosticSeverity.Warning,
             description: "为了保持配置类的一致性和可扩展性，继承自 ManagerConfiguration 或 ModuleConfiguration 的类中不应使用 readonly 修饰符。"
         );
+        
+        /// <summary>
+        /// 诊断规则：英文缩写大小写必须保持一致
+        /// </summary>
+        public static readonly DiagnosticDescriptor AcronymCasingConsistency = DiagnosticDescriptorFactory.Create(
+            id: "0009",
+            title: "英文缩写大小写必须保持一致",
+            messageFormat: "缩写 '{0}' 应保持大小写一致，建议使用 '{1}' 或 '{2}'",
+            category: DiagnosticCategories.Naming,
+            defaultSeverity: DiagnosticSeverity.Warning,
+            description: "为了保持代码风格一致性，英文缩写（如ID、NPC、API等）应始终保持所有字母全大写或全小写。"
+        );
     }
 }
