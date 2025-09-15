@@ -10,6 +10,6 @@ public static class AcronymConstants
 {
     public static readonly HashSet<string> CommonAcronyms = new(StringComparer.OrdinalIgnoreCase)
     {
-        "ID", "UI", "NPC"
+        "ID", "UI", "NPC", "HQ", "NQ"
     };
 }
