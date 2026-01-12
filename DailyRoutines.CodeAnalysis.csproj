@@ -25,7 +25,7 @@
     
     <!-- NuGet包配置 -->
     <PackageId>DailyRoutines.CodeAnalysis</PackageId>
-    <PackageVersion>1.8.0</PackageVersion>
+    <PackageVersion>1.9.0</PackageVersion>
     <Authors>DailyRoutines Team</Authors>
     <Description>适用于 Daily Routines 项目的代码规范分析器</Description>
     <Copyright>Copyright © DailyRoutines Team</Copyright>
