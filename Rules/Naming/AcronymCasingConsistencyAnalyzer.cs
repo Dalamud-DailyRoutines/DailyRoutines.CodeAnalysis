@@ -23,11 +23,6 @@ public class AcronymCasingConsistencyAnalyzer() : BaseAnalyzer(DiagnosticRules.A
         context.RegisterSyntaxNodeAction(AnalyzeMethodDeclaration, SyntaxKind.MethodDeclaration);
         context.RegisterSyntaxNodeAction(AnalyzePropertyDeclaration, SyntaxKind.PropertyDeclaration);
         context.RegisterSyntaxNodeAction(AnalyzeFieldDeclaration, SyntaxKind.FieldDeclaration);
-        context.RegisterSyntaxNodeAction(AnalyzeClassDeclaration, SyntaxKind.ClassDeclaration);
-        context.RegisterSyntaxNodeAction(AnalyzeInterfaceDeclaration, SyntaxKind.InterfaceDeclaration);
-        context.RegisterSyntaxNodeAction(AnalyzeStructDeclaration, SyntaxKind.StructDeclaration);
-        context.RegisterSyntaxNodeAction(AnalyzeEnumDeclaration, SyntaxKind.EnumDeclaration);
-        context.RegisterSyntaxNodeAction(AnalyzeEnumMemberDeclaration, SyntaxKind.EnumMemberDeclaration);
     }
 
     private void AnalyzeVariableDeclaration(SyntaxNodeAnalysisContext context)
@@ -66,41 +61,6 @@ public class AcronymCasingConsistencyAnalyzer() : BaseAnalyzer(DiagnosticRules.A
             var name = variable.Identifier.Text;
             AnalyzeName(context, name, variable.Identifier.GetLocation());
         }
-    }
-
-    private void AnalyzeClassDeclaration(SyntaxNodeAnalysisContext context)
-    {
-        var classDeclaration = (ClassDeclarationSyntax)context.Node;
-        var name = classDeclaration.Identifier.Text;
-        AnalyzeName(context, name, classDeclaration.Identifier.GetLocation());
-    }
-
-    private void AnalyzeInterfaceDeclaration(SyntaxNodeAnalysisContext context)
-    {
-        var interfaceDeclaration = (InterfaceDeclarationSyntax)context.Node;
-        var name = interfaceDeclaration.Identifier.Text;
-        AnalyzeName(context, name, interfaceDeclaration.Identifier.GetLocation());
-    }
-
-    private void AnalyzeStructDeclaration(SyntaxNodeAnalysisContext context)
-    {
-        var structDeclaration = (StructDeclarationSyntax)context.Node;
-        var name = structDeclaration.Identifier.Text;
-        AnalyzeName(context, name, structDeclaration.Identifier.GetLocation());
-    }
-
-    private void AnalyzeEnumDeclaration(SyntaxNodeAnalysisContext context)
-    {
-        var enumDeclaration = (EnumDeclarationSyntax)context.Node;
-        var name = enumDeclaration.Identifier.Text;
-        AnalyzeName(context, name, enumDeclaration.Identifier.GetLocation());
-    }
-
-    private void AnalyzeEnumMemberDeclaration(SyntaxNodeAnalysisContext context)
-    {
-        var enumMemberDeclaration = (EnumMemberDeclarationSyntax)context.Node;
-        var name = enumMemberDeclaration.Identifier.Text;
-        AnalyzeName(context, name, enumMemberDeclaration.Identifier.GetLocation());
     }
 
     /// <summary>
