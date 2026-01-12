@@ -24,12 +24,12 @@ DailyRoutines.CodeAnalysis/
 
 ## 当前规则
 
-| 规则 ID | 类别 | 描述 | 严重性 |
-|---------|------|------|--------|
-| DR0001 | 用法 | 使用 `nint` 代替 `IntPtr` | 警告 |
-| DR0002 | 命名 | 不允许命名以下划线开头 | 警告 |
-| DR0008 | 设计 | 继承自 `ManagerConfiguration` 或 `ModuleConfiguration` 的类中不允许使用 `readonly` 修饰符 | 警告 |
-| DR0009 | 命名 | 英文缩写大小写必须保持一致 | 警告 |
+| 规则 ID  | 类别 | 描述                                                                         | 严重性 |
+|--------|----|----------------------------------------------------------------------------|-----|
+| DR0001 | 用法 | 使用 `nint` 代替 `IntPtr`                                                      | 警告  |
+| DR0002 | 命名 | 不允许命名以下划线开头                                                                | 警告  |
+| DR0008 | 设计 | 继承自 `ManagerConfiguration` 或 `ModuleConfiguration` 的类中不允许使用 `readonly` 修饰符 | 警告  |
+| DR0009 | 命名 | 英文缩写大小写必须保持一致                                                              | 警告  |
 
 ## 添加新规则
 
@@ -42,7 +42,8 @@ DailyRoutines.CodeAnalysis/
 
 ### 添加分析器示例
 
-1. 复制 `Templates/TemplateAnalyzer.cs` 到适当的类别文件夹中，例如 `Rules/Performance/AvoidUnnecessaryAllocationAnalyzer.cs`
+1. 复制 `Templates/TemplateAnalyzer.cs` 到适当的类别文件夹中，例如
+   `Rules/Performance/AvoidUnnecessaryAllocationAnalyzer.cs`
 2. 修改命名空间、类名和规则实现
 3. 在 `Common/DiagnosticRules.cs` 中添加规则描述符：
 

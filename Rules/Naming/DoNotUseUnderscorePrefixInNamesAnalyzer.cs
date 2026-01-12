@@ -66,9 +66,9 @@ public class DoNotUseUnderscorePrefixInNamesAnalyzer() : BaseAnalyzer(Diagnostic
     {
         var fieldDeclaration = (FieldDeclarationSyntax)context.Node;
         foreach (var variable in from variable in fieldDeclaration.Declaration.Variables
-                 let name = variable.Identifier.Text
-                 where ShouldReportUnderscorePrefix(name)
-                 select variable)
+                                 let name = variable.Identifier.Text
+                                 where ShouldReportUnderscorePrefix(name)
+                                 select variable)
             ReportDiagnostic(context, variable.Identifier.GetLocation());
     }
 
@@ -91,7 +91,7 @@ public class DoNotUseUnderscorePrefixInNamesAnalyzer() : BaseAnalyzer(Diagnostic
     }
 
     /// <summary>
-    /// 判断是否应该报告下划线前缀的问题
+    ///     判断是否应该报告下划线前缀的问题
     /// </summary>
     /// <param name="name">标识符名称</param>
     /// <returns>如果应该报告则返回true，否则返回false</returns>
@@ -100,7 +100,7 @@ public class DoNotUseUnderscorePrefixInNamesAnalyzer() : BaseAnalyzer(Diagnostic
         // 排除单独一个下划线的情况（C#中通常用作弃元标识符）
         if (name == "_")
             return false;
-            
+
         return name.StartsWith("_", StringComparison.Ordinal);
     }
 }

@@ -3,16 +3,16 @@ using System.Composition;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using DailyRoutines.CodeAnalysis.Common;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Rename;
-using DailyRoutines.CodeAnalysis.Common;
 
 namespace DailyRoutines.CodeAnalysis.Rules.Naming;
 
 /// <summary>
-/// 代码修复提供程序：移除下划线前缀
+///     代码修复提供程序：移除下划线前缀
 /// </summary>
 [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(DoNotUseUnderscorePrefixInNamesCodeFixProvider)), Shared]
 public class DoNotUseUnderscorePrefixInNamesCodeFixProvider : BaseCodeFixProvider
@@ -49,12 +49,16 @@ public class DoNotUseUnderscorePrefixInNamesCodeFixProvider : BaseCodeFixProvide
         if (char.IsUpper(newName[0]) && symbol.Kind is SymbolKind.Local or SymbolKind.Field or SymbolKind.Parameter)
             newName = char.ToLowerInvariant(newName[0]) + newName.Substring(1);
 
-        context.RegisterCodeFix(
-            CodeAction.Create(
-                title: $"移除下划线前缀 '{oldName}' -> '{newName}'",
-                createChangedSolution: c => RenameSymbolAsync(context.Document, symbol, newName, c),
-                equivalenceKey: nameof(DoNotUseUnderscorePrefixInNamesCodeFixProvider)),
-            diagnostic);
+        context.RegisterCodeFix
+        (
+            CodeAction.Create
+            (
+                $"移除下划线前缀 '{oldName}' -> '{newName}'",
+                c => RenameSymbolAsync(context.Document, symbol, newName, c),
+                nameof(DoNotUseUnderscorePrefixInNamesCodeFixProvider)
+            ),
+            diagnostic
+        );
     }
 
     private static async Task<Solution> RenameSymbolAsync(Document document, ISymbol symbol, string newName, CancellationToken cancellationToken)

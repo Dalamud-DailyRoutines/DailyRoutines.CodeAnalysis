@@ -6,16 +6,16 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using DailyRoutines.CodeAnalysis.Common;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
-using DailyRoutines.CodeAnalysis.Common;
 using Microsoft.CodeAnalysis.Rename;
 
 namespace DailyRoutines.CodeAnalysis.Rules.Naming;
 
 /// <summary>
-/// 代码修复提供程序：修复英文缩写大小写不一致问题
+///     代码修复提供程序：修复英文缩写大小写不一致问题
 /// </summary>
 [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(AcronymCasingConsistencyCodeFixProvider)), Shared]
 public class AcronymCasingConsistencyCodeFixProvider : BaseCodeFixProvider
@@ -31,7 +31,7 @@ public class AcronymCasingConsistencyCodeFixProvider : BaseCodeFixProvider
         var model = await context.Document.GetSemanticModelAsync(context.CancellationToken).ConfigureAwait(false);
         if (model == null) return;
 
-        var diagnostic = context.Diagnostics.First();
+        var diagnostic     = context.Diagnostics.First();
         var diagnosticSpan = diagnostic.Location.SourceSpan;
 
         // 查找包含缩写的标识符
@@ -42,19 +42,17 @@ public class AcronymCasingConsistencyCodeFixProvider : BaseCodeFixProvider
         // 注意：node 可能只是 IdentifierToken 的父节点（例如 VariableDeclarator），或者就是 IdentifierToken 本身
         // 我们需要找到声明该符号的节点
         ISymbol symbol = null;
-        
+
         // 尝试直接获取声明符号
         symbol = model.GetDeclaredSymbol(node, context.CancellationToken);
-        
+
         // 如果失败，尝试从父节点获取（例如，如果 node 是 IdentifierNameSyntax，我们需要 VariableDeclaratorSyntax）
         if (symbol == null && node.Parent != null)
-        {
             symbol = model.GetDeclaredSymbol(node.Parent, context.CancellationToken);
-        }
 
         // 如果还是失败，可能是字段声明中的变量（FieldDeclaration -> VariableDeclaration -> VariableDeclarator）
         // 但通常 FieldDeclaration 下的 Variables 才是声明点
-        
+
         if (symbol == null) return;
 
         var oldName = symbol.Name;
@@ -62,40 +60,43 @@ public class AcronymCasingConsistencyCodeFixProvider : BaseCodeFixProvider
 
         // 生成修复选项
         var fixOptions = GenerateFixOptions(oldName);
+
         foreach (var (newName, description) in fixOptions)
         {
             if (newName != oldName)
             {
-                context.RegisterCodeFix(
-                    CodeAction.Create(
-                        title: description,
-                        createChangedSolution: c => RenameSymbolAsync(context.Document, symbol, newName, c),
-                        equivalenceKey: $"{nameof(AcronymCasingConsistencyCodeFixProvider)}_{newName}"),
-                    diagnostic);
+                context.RegisterCodeFix
+                (
+                    CodeAction.Create
+                    (
+                        description,
+                        c => RenameSymbolAsync(context.Document, symbol, newName, c),
+                        $"{nameof(AcronymCasingConsistencyCodeFixProvider)}_{newName}"
+                    ),
+                    diagnostic
+                );
             }
         }
     }
 
     /// <summary>
-    /// 生成修复选项
+    ///     生成修复选项
     /// </summary>
     /// <param name="originalName">原始名称</param>
     /// <returns>修复选项列表，包含新名称和描述</returns>
     private static List<(string newName, string description)> GenerateFixOptions(string originalName)
     {
-        var options = new List<(string, string)>();
+        var options   = new List<(string, string)>();
         var fixedName = FixAcronymCasing(originalName);
 
         if (fixedName != originalName)
-        {
             options.Add((fixedName, $"修复缩写大小写: '{originalName}' -> '{fixedName}'"));
-        }
 
         return options;
     }
 
     /// <summary>
-    /// 修复名称中的缩写大小写
+    ///     修复名称中的缩写大小写
     /// </summary>
     /// <param name="name">原始名称</param>
     /// <returns>修复后的名称</returns>
@@ -107,16 +108,16 @@ public class AcronymCasingConsistencyCodeFixProvider : BaseCodeFixProvider
         var isFirstCharUpper = char.IsUpper(name[0]);
 
         // 将驼峰命名分割成单词
-        var words = SplitCamelCase(name);
+        var words      = SplitCamelCase(name);
         var fixedWords = new List<string>();
 
         // 遍历所有单词，同时跟踪实际的单词索引（跳过分隔符）
-        int wordIndex = 0;
+        var wordIndex = 0;
 
         foreach (var word in words)
         {
             var fixedWord = word;
-            
+
             // 检查是否是分隔符（如下划线），如果是则直接保留
             if (word == "_")
             {
@@ -135,19 +136,15 @@ public class AcronymCasingConsistencyCodeFixProvider : BaseCodeFixProvider
                     //    - 如果原名称首字母是小写 (camelCase)，则全小写 (xmlReader -> xmlReader)
                     // 2. 如果不是第一个单词：
                     //    - 始终全大写 (parseXml -> parseXML, ParseXml -> ParseXML)
-                    
+
                     if (wordIndex == 0)
-                    {
                         fixedWord = isFirstCharUpper ? acronym.ToUpperInvariant() : acronym.ToLowerInvariant();
-                    }
                     else
-                    {
                         fixedWord = acronym.ToUpperInvariant();
-                    }
                     break;
                 }
             }
-            
+
             fixedWords.Add(fixedWord);
             wordIndex++;
         }
@@ -157,7 +154,7 @@ public class AcronymCasingConsistencyCodeFixProvider : BaseCodeFixProvider
     }
 
     /// <summary>
-    /// 将驼峰命名分割成单词
+    ///     将驼峰命名分割成单词
     /// </summary>
     /// <param name="name">标识符名称</param>
     /// <returns>分割后的单词列表</returns>
@@ -174,21 +171,19 @@ public class AcronymCasingConsistencyCodeFixProvider : BaseCodeFixProvider
         // 3. 数字和字母的分界
         // 4. 下划线分隔 (将其捕获以便保留)
         var pattern = @"(?<!^)(?=[A-Z][a-z])|(?<=[a-z])(?=[A-Z])|(?<=[0-9])(?=[A-Za-z])|(?<=[A-Za-z])(?=[0-9])|(_)";
-        var parts = Regex.Split(name, pattern);
+        var parts   = Regex.Split(name, pattern);
 
         foreach (var part in parts)
         {
             if (!string.IsNullOrEmpty(part))
-            {
                 words.Add(part);
-            }
         }
 
         return words;
     }
 
     /// <summary>
-    /// 重命名符号
+    ///     重命名符号
     /// </summary>
     /// <param name="document">文档</param>
     /// <param name="symbol">符号</param>
@@ -198,7 +193,7 @@ public class AcronymCasingConsistencyCodeFixProvider : BaseCodeFixProvider
     private static async Task<Solution> RenameSymbolAsync(Document document, ISymbol symbol, string newName, CancellationToken cancellationToken)
     {
         var solution = document.Project.Solution;
-        var options = solution.Workspace.Options;
+        var options  = solution.Workspace.Options;
 
         // 使用工作区选项进行重命名
         return await Renamer.RenameSymbolAsync(solution, symbol, newName, options, cancellationToken).ConfigureAwait(false);

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace DailyRoutines.CodeAnalysis.Common;
 
 /// <summary>
-/// 英文缩写常量定义
+///     英文缩写常量定义
 /// </summary>
 public static class AcronymConstants
 {
@@ -19,7 +19,7 @@ public static class AcronymConstants
     };
 
     /// <summary>
-    /// 忽略的单词列表（这些单词包含缩写但不应被修改）
+    ///     忽略的单词列表（这些单词包含缩写但不应被修改）
     /// </summary>
     public static readonly HashSet<string> IgnoredWords = new(StringComparer.OrdinalIgnoreCase)
     {

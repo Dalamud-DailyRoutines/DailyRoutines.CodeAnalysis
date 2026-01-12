@@ -1,4 +1,3 @@
-using System.Linq;
 using DailyRoutines.CodeAnalysis.Common;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -15,11 +14,12 @@ public class ConfigurationClassesMustNotUseReadonlyFieldsAnalyzer : BaseAnalyzer
 {
     // 需要检查的基类名称
     private const string ManagerConfigurationClassName = "ManagerConfiguration";
-    private const string ModuleConfigurationClassName = "ModuleConfiguration";
+    private const string ModuleConfigurationClassName  = "ModuleConfiguration";
 
     public ConfigurationClassesMustNotUseReadonlyFieldsAnalyzer()
         : base(DiagnosticRules.ConfigurationClassesMustNotUseReadonlyFields)
-    { }
+    {
+    }
 
     protected override void RegisterAnalyzers(AnalysisContext context)
     {
@@ -31,7 +31,7 @@ public class ConfigurationClassesMustNotUseReadonlyFieldsAnalyzer : BaseAnalyzer
     {
         // 获取字段声明节点
         var fieldDeclaration = (FieldDeclarationSyntax)context.Node;
-        
+
         // 检查字段是否有readonly修饰符
         if (!fieldDeclaration.Modifiers.Any(SyntaxKind.ReadOnlyKeyword))
             return;
@@ -52,19 +52,16 @@ public class ConfigurationClassesMustNotUseReadonlyFieldsAnalyzer : BaseAnalyzer
             return;
 
         string configurationBaseClassName = null;
-        
+
         if (baseType.Name == ManagerConfigurationClassName)
-        {
             configurationBaseClassName = ManagerConfigurationClassName;
-        }
         else if (baseType.Name == ModuleConfigurationClassName)
-        {
             configurationBaseClassName = ModuleConfigurationClassName;
-        }
         else
         {
             // 递归检查更高层次的基类
             var currentBaseType = baseType.BaseType;
+
             while (currentBaseType != null)
             {
                 if (currentBaseType.Name == ManagerConfigurationClassName)
@@ -72,12 +69,13 @@ public class ConfigurationClassesMustNotUseReadonlyFieldsAnalyzer : BaseAnalyzer
                     configurationBaseClassName = ManagerConfigurationClassName;
                     break;
                 }
-                else if (currentBaseType.Name == ModuleConfigurationClassName)
+
+                if (currentBaseType.Name == ModuleConfigurationClassName)
                 {
                     configurationBaseClassName = ModuleConfigurationClassName;
                     break;
                 }
-                
+
                 currentBaseType = currentBaseType.BaseType;
             }
         }
@@ -86,9 +84,7 @@ public class ConfigurationClassesMustNotUseReadonlyFieldsAnalyzer : BaseAnalyzer
         if (configurationBaseClassName != null)
         {
             foreach (var variable in fieldDeclaration.Declaration.Variables)
-            {
                 ReportDiagnostic(context, variable.GetLocation(), configurationBaseClassName);
-            }
         }
     }
 }

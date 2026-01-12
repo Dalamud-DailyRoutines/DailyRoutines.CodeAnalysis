@@ -1,21 +1,21 @@
 <Project>
-  <!-- 禁用警告的配置 -->
-  <PropertyGroup>
-    <!-- 警告级别设置为0（不显示警告） -->
-    <WarningLevel>0</WarningLevel>
-    
-    <!-- 禁用特定警告 -->
-    <NoWarn>CS8625;CS8604;CS8602;CS0618;CS8631;CS0712;CS0723;CS1503;CS8625;CS8604;CS8602;CS0618;CS8631;CS0712;CS0723;CS1503;CA1051;CA1721;CA1062;CA1310;CA1304;RS1033;RS2008</NoWarn>
-    
-    <!-- 禁用代码分析 -->
-    <EnableNETAnalyzers>false</EnableNETAnalyzers>
-    <AnalysisLevel>none</AnalysisLevel>
-    <EnforceCodeStyleInBuild>false</EnforceCodeStyleInBuild>
-    <RunAnalyzersDuringBuild>false</RunAnalyzersDuringBuild>
-    <RunAnalyzersDuringLiveAnalysis>false</RunAnalyzersDuringLiveAnalysis>
-    <GenerateDocumentationFile>false</GenerateDocumentationFile>
-    
-    <!-- 禁用特定编辑器功能 -->
-    <Features>-stricteditor</Features>
-  </PropertyGroup>
+    <!-- 禁用警告的配置 -->
+    <PropertyGroup>
+        <!-- 警告级别设置为0（不显示警告） -->
+        <WarningLevel>0</WarningLevel>
+
+        <!-- 禁用特定警告 -->
+        <NoWarn>CS8625;CS8604;CS8602;CS0618;CS8631;CS0712;CS0723;CS1503;CS8625;CS8604;CS8602;CS0618;CS8631;CS0712;CS0723;CS1503;CA1051;CA1721;CA1062;CA1310;CA1304;RS1033;RS2008</NoWarn>
+
+        <!-- 禁用代码分析 -->
+        <EnableNETAnalyzers>false</EnableNETAnalyzers>
+        <AnalysisLevel>none</AnalysisLevel>
+        <EnforceCodeStyleInBuild>false</EnforceCodeStyleInBuild>
+        <RunAnalyzersDuringBuild>false</RunAnalyzersDuringBuild>
+        <RunAnalyzersDuringLiveAnalysis>false</RunAnalyzersDuringLiveAnalysis>
+        <GenerateDocumentationFile>false</GenerateDocumentationFile>
+
+        <!-- 禁用特定编辑器功能 -->
+        <Features>-stricteditor</Features>
+    </PropertyGroup>
 </Project> 

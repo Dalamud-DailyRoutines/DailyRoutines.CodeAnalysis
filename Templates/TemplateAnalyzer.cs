@@ -32,7 +32,8 @@ public class ExampleRuleAnalyzer : BaseAnalyzer
     // 构造函数接收诊断描述符
     public ExampleRuleAnalyzer()
         : base(DiagnosticRules.ExampleRule) // 使用DiagnosticRules中定义的规则
-    { }
+    {
+    }
 
     protected override void RegisterAnalyzers(AnalysisContext context)
     {

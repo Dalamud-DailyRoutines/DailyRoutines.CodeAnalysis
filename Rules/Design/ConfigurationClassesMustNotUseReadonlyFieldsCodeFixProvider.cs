@@ -26,7 +26,7 @@ public class ConfigurationClassesMustNotUseReadonlyFieldsCodeFixProvider : BaseC
         var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
         if (root == null) return;
 
-        var diagnostic = context.Diagnostics.First();
+        var diagnostic     = context.Diagnostics.First();
         var diagnosticSpan = diagnostic.Location.SourceSpan;
 
         // 找到需要修复的变量声明节点
@@ -38,12 +38,16 @@ public class ConfigurationClassesMustNotUseReadonlyFieldsCodeFixProvider : BaseC
         if (fieldDeclaration == null) return;
 
         // 注册代码修复
-        context.RegisterCodeFix(
-            CodeAction.Create(
+        context.RegisterCodeFix
+        (
+            CodeAction.Create
+            (
                 "移除readonly修饰符",
                 c => RemoveReadonlyModifierAsync(context.Document, fieldDeclaration, c),
-                nameof(ConfigurationClassesMustNotUseReadonlyFieldsCodeFixProvider)),
-            diagnostic);
+                nameof(ConfigurationClassesMustNotUseReadonlyFieldsCodeFixProvider)
+            ),
+            diagnostic
+        );
     }
 
     private static async Task<Document> RemoveReadonlyModifierAsync(Document document, FieldDeclarationSyntax fieldDeclaration, CancellationToken cancellationToken)
@@ -52,7 +56,7 @@ public class ConfigurationClassesMustNotUseReadonlyFieldsCodeFixProvider : BaseC
         if (root == null) return document;
 
         // 创建新的修饰符列表，移除readonly修饰符
-        var newModifiers = fieldDeclaration.Modifiers.Where(m => !m.IsKind(SyntaxKind.ReadOnlyKeyword));
+        var newModifiers        = fieldDeclaration.Modifiers.Where(m => !m.IsKind(SyntaxKind.ReadOnlyKeyword));
         var newFieldDeclaration = fieldDeclaration.WithModifiers(SyntaxFactory.TokenList(newModifiers));
 
         // 替换节点

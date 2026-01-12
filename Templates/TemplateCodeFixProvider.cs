@@ -36,12 +36,16 @@ public class ExampleRuleCodeFixProvider : BaseCodeFixProvider
         if (nodeToFix == null) return;
 
         // 注册代码修复
-        context.RegisterCodeFix(
-            CodeAction.Create(
+        context.RegisterCodeFix
+        (
+            CodeAction.Create
+            (
                 "应用修复", // 修复的描述
                 c => ApplyFixAsync(context.Document, nodeToFix, c),
-                nameof(ExampleRuleCodeFixProvider)),
-            diagnostic);
+                nameof(ExampleRuleCodeFixProvider)
+            ),
+            diagnostic
+        );
     }
 
     private static async Task<Document> ApplyFixAsync(Document document, SyntaxNode nodeToFix, CancellationToken cancellationToken)

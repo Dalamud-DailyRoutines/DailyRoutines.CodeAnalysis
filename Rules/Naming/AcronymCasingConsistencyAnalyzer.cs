@@ -1,51 +1,55 @@
 using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using DailyRoutines.CodeAnalysis.Common;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
-using DailyRoutines.CodeAnalysis.Common;
 
 namespace DailyRoutines.CodeAnalysis.Rules.Naming;
 
 /// <summary>
-/// 分析器：英文缩写大小写必须保持一致
+///     分析器：英文缩写大小写必须保持一致
 /// </summary>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 public class AcronymCasingConsistencyAnalyzer() : BaseAnalyzer(DiagnosticRules.AcronymCasingConsistency)
 {
+    // 缓存拆分后的忽略序列
+    private static          List<List<string>> _ignoredSequencesCache;
+    private static readonly object             _cacheLock = new();
+
     protected override void RegisterAnalyzers(AnalysisContext context)
     {
         // 检查各种声明
-        context.RegisterSyntaxNodeAction(AnalyzeVariableDeclaration, SyntaxKind.VariableDeclarator);
+        context.RegisterSyntaxNodeAction(AnalyzeVariableDeclaration,  SyntaxKind.VariableDeclarator);
         context.RegisterSyntaxNodeAction(AnalyzeParameterDeclaration, SyntaxKind.Parameter);
-        context.RegisterSyntaxNodeAction(AnalyzeMethodDeclaration, SyntaxKind.MethodDeclaration);
-        context.RegisterSyntaxNodeAction(AnalyzePropertyDeclaration, SyntaxKind.PropertyDeclaration);
-        context.RegisterSyntaxNodeAction(AnalyzeFieldDeclaration, SyntaxKind.FieldDeclaration);
+        context.RegisterSyntaxNodeAction(AnalyzeMethodDeclaration,    SyntaxKind.MethodDeclaration);
+        context.RegisterSyntaxNodeAction(AnalyzePropertyDeclaration,  SyntaxKind.PropertyDeclaration);
+        context.RegisterSyntaxNodeAction(AnalyzeFieldDeclaration,     SyntaxKind.FieldDeclaration);
     }
 
     private void AnalyzeVariableDeclaration(SyntaxNodeAnalysisContext context)
     {
         var variableDeclarator = (VariableDeclaratorSyntax)context.Node;
-        var name = variableDeclarator.Identifier.Text;
+        var name               = variableDeclarator.Identifier.Text;
         AnalyzeName(context, name, variableDeclarator.Identifier.GetLocation());
     }
 
     private void AnalyzeParameterDeclaration(SyntaxNodeAnalysisContext context)
     {
         var parameter = (ParameterSyntax)context.Node;
-        var name = parameter.Identifier.Text;
+        var name      = parameter.Identifier.Text;
         AnalyzeName(context, name, parameter.Identifier.GetLocation());
     }
 
     private void AnalyzeMethodDeclaration(SyntaxNodeAnalysisContext context)
     {
         var methodDeclaration = (MethodDeclarationSyntax)context.Node;
-        
+
         if (IsOverrideOrInterfaceImplementation(methodDeclaration, context))
             return;
-            
+
         var name = methodDeclaration.Identifier.Text;
         AnalyzeName(context, name, methodDeclaration.Identifier.GetLocation());
     }
@@ -53,10 +57,10 @@ public class AcronymCasingConsistencyAnalyzer() : BaseAnalyzer(DiagnosticRules.A
     private void AnalyzePropertyDeclaration(SyntaxNodeAnalysisContext context)
     {
         var propertyDeclaration = (PropertyDeclarationSyntax)context.Node;
-        
+
         if (IsOverrideOrInterfaceImplementation(propertyDeclaration, context))
             return;
-            
+
         var name = propertyDeclaration.Identifier.Text;
         AnalyzeName(context, name, propertyDeclaration.Identifier.GetLocation());
     }
@@ -64,6 +68,7 @@ public class AcronymCasingConsistencyAnalyzer() : BaseAnalyzer(DiagnosticRules.A
     private void AnalyzeFieldDeclaration(SyntaxNodeAnalysisContext context)
     {
         var fieldDeclaration = (FieldDeclarationSyntax)context.Node;
+
         foreach (var variable in fieldDeclaration.Declaration.Variables)
         {
             var name = variable.Identifier.Text;
@@ -72,7 +77,7 @@ public class AcronymCasingConsistencyAnalyzer() : BaseAnalyzer(DiagnosticRules.A
     }
 
     /// <summary>
-    /// 检查符号是否是重写成员或接口实现
+    ///     检查符号是否是重写成员或接口实现
     /// </summary>
     private static bool IsOverrideOrInterfaceImplementation(SyntaxNode node, SyntaxNodeAnalysisContext context)
     {
@@ -86,6 +91,7 @@ public class AcronymCasingConsistencyAnalyzer() : BaseAnalyzer(DiagnosticRules.A
                 return true;
 
             var typeSymbol = methodSymbol.ContainingType;
+
             if (typeSymbol != null)
             {
                 foreach (var interfaceType in typeSymbol.AllInterfaces)
@@ -105,6 +111,7 @@ public class AcronymCasingConsistencyAnalyzer() : BaseAnalyzer(DiagnosticRules.A
                 return true;
 
             var typeSymbol = propertySymbol.ContainingType;
+
             if (typeSymbol != null)
             {
                 foreach (var interfaceType in typeSymbol.AllInterfaces)
@@ -123,7 +130,7 @@ public class AcronymCasingConsistencyAnalyzer() : BaseAnalyzer(DiagnosticRules.A
     }
 
     /// <summary>
-    /// 分析名称中的缩写大小写一致性
+    ///     分析名称中的缩写大小写一致性
     /// </summary>
     /// <param name="context">分析上下文</param>
     /// <param name="name">标识符名称</param>
@@ -134,20 +141,23 @@ public class AcronymCasingConsistencyAnalyzer() : BaseAnalyzer(DiagnosticRules.A
             return;
 
         var inconsistentAcronyms = FindInconsistentAcronyms(name);
+
         foreach (var (acronym, upperCase, lowerCase) in inconsistentAcronyms)
         {
-            var diagnostic = Diagnostic.Create(
+            var diagnostic = Diagnostic.Create
+            (
                 DiagnosticRules.AcronymCasingConsistency,
                 location,
                 acronym,
                 upperCase,
-                lowerCase);
+                lowerCase
+            );
             context.ReportDiagnostic(diagnostic);
         }
     }
 
     /// <summary>
-    /// 查找名称中大小写不一致的缩写
+    ///     查找名称中大小写不一致的缩写
     /// </summary>
     /// <param name="name">标识符名称</param>
     /// <returns>不一致的缩写列表，包含原始缩写、全大写形式和全小写形式</returns>
@@ -157,23 +167,22 @@ public class AcronymCasingConsistencyAnalyzer() : BaseAnalyzer(DiagnosticRules.A
 
         // 将驼峰命名分割成单词
         var words = SplitCamelCase(name);
-        
+
         // 获取忽略单词的拆分形式缓存
         var ignoredSequences = GetIgnoredSequences();
 
-        for (int i = 0; i < words.Count; i++)
+        for (var i = 0; i < words.Count; i++)
         {
             // 检查当前位置是否匹配任何忽略序列
             var matchedIgnoredLength = 0;
+
             foreach (var ignoredSequence in ignoredSequences)
             {
                 if (IsSequenceMatch(words, i, ignoredSequence))
-                {
                     // 找到最长匹配
+                {
                     if (ignoredSequence.Count > matchedIgnoredLength)
-                    {
                         matchedIgnoredLength = ignoredSequence.Count;
-                    }
                 }
             }
 
@@ -196,9 +205,7 @@ public class AcronymCasingConsistencyAnalyzer() : BaseAnalyzer(DiagnosticRules.A
 
                     // 检查是否为混合大小写（既不是全大写也不是全小写）
                     if (word != upperCase && word != lowerCase)
-                    {
                         result.Add((word, upperCase, lowerCase));
-                    }
                     break; // 找到匹配后跳出内层循环
                 }
             }
@@ -208,29 +215,23 @@ public class AcronymCasingConsistencyAnalyzer() : BaseAnalyzer(DiagnosticRules.A
     }
 
     /// <summary>
-    /// 检查单词序列是否匹配忽略序列
+    ///     检查单词序列是否匹配忽略序列
     /// </summary>
     private static bool IsSequenceMatch(List<string> words, int startIndex, List<string> ignoredSequence)
     {
         if (startIndex + ignoredSequence.Count > words.Count)
             return false;
 
-        for (int i = 0; i < ignoredSequence.Count; i++)
-        {
+        for (var i = 0; i < ignoredSequence.Count; i++)
             // 忽略大小写比较单词部分
             if (!string.Equals(words[startIndex + i], ignoredSequence[i], StringComparison.OrdinalIgnoreCase))
                 return false;
-        }
 
         return true;
     }
 
-    // 缓存拆分后的忽略序列
-    private static List<List<string>> _ignoredSequencesCache;
-    private static readonly object _cacheLock = new();
-
     /// <summary>
-    /// 获取拆分后的忽略序列
+    ///     获取拆分后的忽略序列
     /// </summary>
     private static List<List<string>> GetIgnoredSequences()
     {
@@ -243,20 +244,20 @@ public class AcronymCasingConsistencyAnalyzer() : BaseAnalyzer(DiagnosticRules.A
                 return _ignoredSequencesCache;
 
             var sequences = new List<List<string>>();
+
             foreach (var ignoredWord in AcronymConstants.IgnoredWords)
             {
                 if (!string.IsNullOrEmpty(ignoredWord))
-                {
                     sequences.Add(SplitCamelCase(ignoredWord));
-                }
             }
+
             _ignoredSequencesCache = sequences;
             return _ignoredSequencesCache;
         }
     }
 
     /// <summary>
-    /// 将驼峰命名分割成单词
+    ///     将驼峰命名分割成单词
     /// </summary>
     /// <param name="name">标识符名称</param>
     /// <returns>分割后的单词列表</returns>
@@ -273,14 +274,12 @@ public class AcronymCasingConsistencyAnalyzer() : BaseAnalyzer(DiagnosticRules.A
         // 3. 数字和字母的分界
         // 4. 下划线分隔 (将其捕获以便保留)
         var pattern = @"(?<!^)(?=[A-Z][a-z])|(?<=[a-z])(?=[A-Z])|(?<=[0-9])(?=[A-Za-z])|(?<=[A-Za-z])(?=[0-9])|(_)";
-        var parts = Regex.Split(name, pattern);
+        var parts   = Regex.Split(name, pattern);
 
         foreach (var part in parts)
         {
             if (!string.IsNullOrEmpty(part))
-            {
                 words.Add(part);
-            }
         }
 
         return words;
