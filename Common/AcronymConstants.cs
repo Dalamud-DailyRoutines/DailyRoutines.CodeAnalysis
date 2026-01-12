@@ -17,4 +17,12 @@ public static class AcronymConstants
         "GUI", "CLI", "SDK", "DLL", "EXE", "URI", "UTC", "GMT", "GUID", "UUID",
         "DTO", "VO", "POJO", "DAO"
     };
+
+    /// <summary>
+    /// 忽略的单词列表（这些单词包含缩写但不应被修改）
+    /// </summary>
+    public static readonly HashSet<string> IgnoredWords = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "ImGui"
+    };
 }

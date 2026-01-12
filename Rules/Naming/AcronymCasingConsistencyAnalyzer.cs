@@ -157,9 +157,35 @@ public class AcronymCasingConsistencyAnalyzer() : BaseAnalyzer(DiagnosticRules.A
 
         // 将驼峰命名分割成单词
         var words = SplitCamelCase(name);
+        
+        // 获取忽略单词的拆分形式缓存
+        var ignoredSequences = GetIgnoredSequences();
 
-        foreach (var word in words)
+        for (int i = 0; i < words.Count; i++)
         {
+            // 检查当前位置是否匹配任何忽略序列
+            var matchedIgnoredLength = 0;
+            foreach (var ignoredSequence in ignoredSequences)
+            {
+                if (IsSequenceMatch(words, i, ignoredSequence))
+                {
+                    // 找到最长匹配
+                    if (ignoredSequence.Count > matchedIgnoredLength)
+                    {
+                        matchedIgnoredLength = ignoredSequence.Count;
+                    }
+                }
+            }
+
+            // 如果匹配到忽略序列，跳过这些单词
+            if (matchedIgnoredLength > 0)
+            {
+                i += matchedIgnoredLength - 1;
+                continue;
+            }
+
+            var word = words[i];
+
             // 检查每个单词是否完全匹配缩写列表（忽略大小写）
             foreach (var acronym in AcronymConstants.CommonAcronyms)
             {
@@ -179,6 +205,54 @@ public class AcronymCasingConsistencyAnalyzer() : BaseAnalyzer(DiagnosticRules.A
         }
 
         return result;
+    }
+
+    /// <summary>
+    /// 检查单词序列是否匹配忽略序列
+    /// </summary>
+    private static bool IsSequenceMatch(List<string> words, int startIndex, List<string> ignoredSequence)
+    {
+        if (startIndex + ignoredSequence.Count > words.Count)
+            return false;
+
+        for (int i = 0; i < ignoredSequence.Count; i++)
+        {
+            // 忽略大小写比较单词部分
+            if (!string.Equals(words[startIndex + i], ignoredSequence[i], StringComparison.OrdinalIgnoreCase))
+                return false;
+        }
+
+        return true;
+    }
+
+    // 缓存拆分后的忽略序列
+    private static List<List<string>> _ignoredSequencesCache;
+    private static readonly object _cacheLock = new();
+
+    /// <summary>
+    /// 获取拆分后的忽略序列
+    /// </summary>
+    private static List<List<string>> GetIgnoredSequences()
+    {
+        if (_ignoredSequencesCache != null)
+            return _ignoredSequencesCache;
+
+        lock (_cacheLock)
+        {
+            if (_ignoredSequencesCache != null)
+                return _ignoredSequencesCache;
+
+            var sequences = new List<List<string>>();
+            foreach (var ignoredWord in AcronymConstants.IgnoredWords)
+            {
+                if (!string.IsNullOrEmpty(ignoredWord))
+                {
+                    sequences.Add(SplitCamelCase(ignoredWord));
+                }
+            }
+            _ignoredSequencesCache = sequences;
+            return _ignoredSequencesCache;
+        }
     }
 
     /// <summary>
