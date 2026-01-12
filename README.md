@@ -14,21 +14,9 @@ DailyRoutines.CodeAnalysis/
 │   └── DiagnosticRules.cs      # 所有规则的描述符集合
 ├── Rules/                      # 规则实现
 │   ├── Naming/                 # 命名规则相关
-│   │   ├── DoNotUseUnderscorePrefixInNamesAnalyzer.cs
-│   │   └── DoNotUseUnderscorePrefixInNamesCodeFixProvider.cs
 │   ├── Usage/                  # 用法规则相关
-│   │   ├── UseNintInsteadOfIntPtrAnalyzer.cs
-│   │   └── UseNintInsteadOfIntPtrCodeFixProvider.cs
 │   ├── Design/                 # 设计规则相关
-│   │   ├── ControlStatementBodyMustBeOnNewLineAnalyzer.cs
-│   │   ├── ControlStatementBodyMustBeOnNewLineCodeFixProvider.cs
-│   │   ├── ControlStatementBlockUsageAnalyzer.cs
-│   │   ├── ControlStatementBlockUsageCodeFixProvider.cs
-│   │   ├── BinaryOperatorsMustBeAtEndOfLineAnalyzer.cs
-│   │   ├── BinaryOperatorsMustBeAtEndOfLineCodeFixProvider.cs
-│   │   ├── ConfigurationClassesMustNotUseReadonlyFieldsAnalyzer.cs
-│   │   └── ConfigurationClassesMustNotUseReadonlyFieldsCodeFixProvider.cs
-│   └── Performance/            # 性能规则相关（待添加）
+│   └── Performance/            # 性能规则相关
 └── Templates/                  # 规则模板
     ├── TemplateAnalyzer.cs     # 分析器模板
     └── TemplateCodeFixProvider.cs # 代码修复提供者模板
@@ -40,11 +28,8 @@ DailyRoutines.CodeAnalysis/
 |---------|------|------|--------|
 | DR0001 | 用法 | 使用 `nint` 代替 `IntPtr` | 警告 |
 | DR0002 | 命名 | 不允许命名以下划线开头 | 警告 |
-| DR0004 | 设计 | 控制语句的语句体必须另起一行 | 警告 |
-| DR0005 | 设计 | 只包含简单单行语句的控制语句不应使用大括号 | 警告 |
-| DR0006 | 设计 | 包含多行语句或控制流语句的控制语句必须使用大括号 | 警告 |
-| DR0007 | 设计 | 二元运算符必须在行尾而不是行首 | 警告 |
 | DR0008 | 设计 | 继承自 `ManagerConfiguration` 或 `ModuleConfiguration` 的类中不允许使用 `readonly` 修饰符 | 警告 |
+| DR0009 | 命名 | 英文缩写大小写必须保持一致 | 警告 |
 
 ## 添加新规则
 

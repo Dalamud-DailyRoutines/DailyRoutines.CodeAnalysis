@@ -178,13 +178,13 @@ public class AcronymCasingConsistencyAnalyzer() : BaseAnalyzer(DiagnosticRules.A
         // 1. 连续的大写字母后跟小写字母：XMLHttp -> XML, Http
         // 2. 小写字母后跟大写字母：iconId -> icon, Id
         // 3. 数字和字母的分界
-        // 4. 下划线分隔
-        var pattern = @"(?<!^)(?=[A-Z][a-z])|(?<=[a-z])(?=[A-Z])|(?<=[0-9])(?=[A-Za-z])|(?<=[A-Za-z])(?=[0-9])|_";
+        // 4. 下划线分隔 (将其捕获以便保留)
+        var pattern = @"(?<!^)(?=[A-Z][a-z])|(?<=[a-z])(?=[A-Z])|(?<=[0-9])(?=[A-Za-z])|(?<=[A-Za-z])(?=[0-9])|(_)";
         var parts = Regex.Split(name, pattern);
 
         foreach (var part in parts)
         {
-            if (!string.IsNullOrEmpty(part) && part != "_")
+            if (!string.IsNullOrEmpty(part))
             {
                 words.Add(part);
             }

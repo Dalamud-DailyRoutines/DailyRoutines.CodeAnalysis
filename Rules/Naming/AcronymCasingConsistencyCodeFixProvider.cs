@@ -69,17 +69,11 @@ public class AcronymCasingConsistencyCodeFixProvider : BaseCodeFixProvider
     private static List<(string newName, string description)> GenerateFixOptions(string originalName)
     {
         var options = new List<(string, string)>();
-        var upperCaseName = FixAcronymCasing(originalName, true);
-        var lowerCaseName = FixAcronymCasing(originalName, false);
+        var fixedName = FixAcronymCasing(originalName);
 
-        if (upperCaseName != originalName)
+        if (fixedName != originalName)
         {
-            options.Add((upperCaseName, $"将缩写转换为大写: '{originalName}' -> '{upperCaseName}'"));
-        }
-
-        if (lowerCaseName != originalName)
-        {
-            options.Add((lowerCaseName, $"将缩写转换为小写: '{originalName}' -> '{lowerCaseName}'"));
+            options.Add((fixedName, $"修复缩写大小写: '{originalName}' -> '{fixedName}'"));
         }
 
         return options;
@@ -89,29 +83,58 @@ public class AcronymCasingConsistencyCodeFixProvider : BaseCodeFixProvider
     /// 修复名称中的缩写大小写
     /// </summary>
     /// <param name="name">原始名称</param>
-    /// <param name="useUpperCase">是否使用大写</param>
     /// <returns>修复后的名称</returns>
-    private static string FixAcronymCasing(string name, bool useUpperCase)
+    private static string FixAcronymCasing(string name)
     {
+        if (string.IsNullOrEmpty(name)) return name;
+
+        // 检查原名称首字母大小写
+        var isFirstCharUpper = char.IsUpper(name[0]);
+
         // 将驼峰命名分割成单词
         var words = SplitCamelCase(name);
         var fixedWords = new List<string>();
+
+        // 遍历所有单词，同时跟踪实际的单词索引（跳过分隔符）
+        int wordIndex = 0;
 
         foreach (var word in words)
         {
             var fixedWord = word;
             
+            // 检查是否是分隔符（如下划线），如果是则直接保留
+            if (word == "_")
+            {
+                fixedWords.Add(word);
+                continue;
+            }
+
             // 检查每个单词是否完全匹配缩写列表（忽略大小写）
             foreach (var acronym in AcronymConstants.CommonAcronyms)
             {
                 if (string.Equals(word, acronym, StringComparison.OrdinalIgnoreCase))
                 {
-                    fixedWord = useUpperCase ? acronym.ToUpperInvariant() : acronym.ToLowerInvariant();
+                    // 智能大小写规则：
+                    // 1. 如果是第一个单词：
+                    //    - 如果原名称首字母是大写 (PascalCase)，则全大写 (XmlReader -> XMLReader)
+                    //    - 如果原名称首字母是小写 (camelCase)，则全小写 (xmlReader -> xmlReader)
+                    // 2. 如果不是第一个单词：
+                    //    - 始终全大写 (parseXml -> parseXML, ParseXml -> ParseXML)
+                    
+                    if (wordIndex == 0)
+                    {
+                        fixedWord = isFirstCharUpper ? acronym.ToUpperInvariant() : acronym.ToLowerInvariant();
+                    }
+                    else
+                    {
+                        fixedWord = acronym.ToUpperInvariant();
+                    }
                     break;
                 }
             }
             
             fixedWords.Add(fixedWord);
+            wordIndex++;
         }
 
         // 重新组合单词
@@ -134,13 +157,13 @@ public class AcronymCasingConsistencyCodeFixProvider : BaseCodeFixProvider
         // 1. 连续的大写字母后跟小写字母：XMLHttp -> XML, Http
         // 2. 小写字母后跟大写字母：iconId -> icon, Id
         // 3. 数字和字母的分界
-        // 4. 下划线分隔
-        var pattern = @"(?<!^)(?=[A-Z][a-z])|(?<=[a-z])(?=[A-Z])|(?<=[0-9])(?=[A-Za-z])|(?<=[A-Za-z])(?=[0-9])|_";
+        // 4. 下划线分隔 (将其捕获以便保留)
+        var pattern = @"(?<!^)(?=[A-Z][a-z])|(?<=[a-z])(?=[A-Z])|(?<=[0-9])(?=[A-Za-z])|(?<=[A-Za-z])(?=[0-9])|(_)";
         var parts = Regex.Split(name, pattern);
 
         foreach (var part in parts)
         {
-            if (!string.IsNullOrEmpty(part) && part != "_")
+            if (!string.IsNullOrEmpty(part))
             {
                 words.Add(part);
             }
