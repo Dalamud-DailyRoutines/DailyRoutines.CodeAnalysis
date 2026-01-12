@@ -38,8 +38,23 @@ public class AcronymCasingConsistencyCodeFixProvider : BaseCodeFixProvider
         var node = root.FindNode(diagnosticSpan);
         if (node == null) return;
 
-        // 获取符号信息
-        var symbol = model.GetDeclaredSymbol(node.Parent, context.CancellationToken);
+        // 尝试获取符号
+        // 注意：node 可能只是 IdentifierToken 的父节点（例如 VariableDeclarator），或者就是 IdentifierToken 本身
+        // 我们需要找到声明该符号的节点
+        ISymbol symbol = null;
+        
+        // 尝试直接获取声明符号
+        symbol = model.GetDeclaredSymbol(node, context.CancellationToken);
+        
+        // 如果失败，尝试从父节点获取（例如，如果 node 是 IdentifierNameSyntax，我们需要 VariableDeclaratorSyntax）
+        if (symbol == null && node.Parent != null)
+        {
+            symbol = model.GetDeclaredSymbol(node.Parent, context.CancellationToken);
+        }
+
+        // 如果还是失败，可能是字段声明中的变量（FieldDeclaration -> VariableDeclaration -> VariableDeclarator）
+        // 但通常 FieldDeclaration 下的 Variables 才是声明点
+        
         if (symbol == null) return;
 
         var oldName = symbol.Name;
