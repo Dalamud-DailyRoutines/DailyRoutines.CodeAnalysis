@@ -42,6 +42,10 @@ public class AcronymCasingConsistencyAnalyzer() : BaseAnalyzer(DiagnosticRules.A
     private void AnalyzeMethodDeclaration(SyntaxNodeAnalysisContext context)
     {
         var methodDeclaration = (MethodDeclarationSyntax)context.Node;
+        
+        if (IsOverrideOrInterfaceImplementation(methodDeclaration, context))
+            return;
+            
         var name = methodDeclaration.Identifier.Text;
         AnalyzeName(context, name, methodDeclaration.Identifier.GetLocation());
     }
@@ -49,6 +53,10 @@ public class AcronymCasingConsistencyAnalyzer() : BaseAnalyzer(DiagnosticRules.A
     private void AnalyzePropertyDeclaration(SyntaxNodeAnalysisContext context)
     {
         var propertyDeclaration = (PropertyDeclarationSyntax)context.Node;
+        
+        if (IsOverrideOrInterfaceImplementation(propertyDeclaration, context))
+            return;
+            
         var name = propertyDeclaration.Identifier.Text;
         AnalyzeName(context, name, propertyDeclaration.Identifier.GetLocation());
     }
@@ -61,6 +69,57 @@ public class AcronymCasingConsistencyAnalyzer() : BaseAnalyzer(DiagnosticRules.A
             var name = variable.Identifier.Text;
             AnalyzeName(context, name, variable.Identifier.GetLocation());
         }
+    }
+
+    /// <summary>
+    /// 检查符号是否是重写成员或接口实现
+    /// </summary>
+    private static bool IsOverrideOrInterfaceImplementation(SyntaxNode node, SyntaxNodeAnalysisContext context)
+    {
+        var symbol = context.SemanticModel.GetDeclaredSymbol(node);
+        if (symbol == null)
+            return false;
+
+        if (symbol is IMethodSymbol methodSymbol)
+        {
+            if (methodSymbol.IsOverride)
+                return true;
+
+            var typeSymbol = methodSymbol.ContainingType;
+            if (typeSymbol != null)
+            {
+                foreach (var interfaceType in typeSymbol.AllInterfaces)
+                {
+                    foreach (var interfaceMember in interfaceType.GetMembers())
+                    {
+                        var implementation = typeSymbol.FindImplementationForInterfaceMember(interfaceMember);
+                        if (SymbolEqualityComparer.Default.Equals(implementation, methodSymbol))
+                            return true;
+                    }
+                }
+            }
+        }
+        else if (symbol is IPropertySymbol propertySymbol)
+        {
+            if (propertySymbol.IsOverride)
+                return true;
+
+            var typeSymbol = propertySymbol.ContainingType;
+            if (typeSymbol != null)
+            {
+                foreach (var interfaceType in typeSymbol.AllInterfaces)
+                {
+                    foreach (var interfaceMember in interfaceType.GetMembers())
+                    {
+                        var implementation = typeSymbol.FindImplementationForInterfaceMember(interfaceMember);
+                        if (SymbolEqualityComparer.Default.Equals(implementation, propertySymbol))
+                            return true;
+                    }
+                }
+            }
+        }
+
+        return false;
     }
 
     /// <summary>
