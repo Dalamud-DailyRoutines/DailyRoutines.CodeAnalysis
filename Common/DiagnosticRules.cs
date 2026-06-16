@@ -16,7 +16,7 @@ public static class DiagnosticRules
         "使用nint代替IntPtr",
         "应使用'nint'代替'IntPtr'",
         DiagnosticCategories.Usage,
-        DiagnosticSeverity.Warning,
+        DiagnosticSeverity.Error,
         "使用nint类型代替IntPtr类型以提高代码一致性。"
     );
 
@@ -29,7 +29,7 @@ public static class DiagnosticRules
         "不要在命名中使用下划线前缀",
         "命名不应以下划线开头",
         DiagnosticCategories.Naming,
-        DiagnosticSeverity.Warning,
+        DiagnosticSeverity.Error,
         "为了保持代码风格一致性，命名不应以下划线开头。"
     );
 
@@ -56,7 +56,7 @@ public static class DiagnosticRules
         "配置类中不允许使用 readonly 字段",
         "继承自{0}的类中不应使用 readonly 修饰符",
         DiagnosticCategories.Design,
-        DiagnosticSeverity.Warning,
+        DiagnosticSeverity.Error,
         "为了保持配置类的一致性和可扩展性，继承自 ManagerConfiguration 或 ModuleConfiguration 的类中不应使用 readonly 修饰符。"
     );
 
@@ -69,7 +69,7 @@ public static class DiagnosticRules
         "英文缩写大小写必须保持一致",
         "缩写 '{0}' 应保持大小写一致，建议使用 '{1}' 或 '{2}'",
         DiagnosticCategories.Naming,
-        DiagnosticSeverity.Warning,
+        DiagnosticSeverity.Error,
         "为了保持代码风格一致性，英文缩写（如ID、NPC、API等）应始终保持所有字母全大写或全小写。"
     );
 }
