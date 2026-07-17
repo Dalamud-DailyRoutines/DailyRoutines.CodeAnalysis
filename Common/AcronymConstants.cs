@@ -56,7 +56,8 @@ public static class AcronymConstants
         "POJO",
         "DAO",
         "TTL",
-        "IO"
+        "IO",
+        "MCP"
     };
 
     /// <summary>
