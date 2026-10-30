@@ -18,7 +18,10 @@ public abstract class BaseAnalyzer : DiagnosticAnalyzer
     ///     创建新的分析器实例
     /// </summary>
     /// <param name="descriptor">诊断描述符</param>
-    protected BaseAnalyzer(DiagnosticDescriptor descriptor) =>
+    protected BaseAnalyzer
+    (
+        DiagnosticDescriptor descriptor
+    ) =>
         Descriptor = descriptor;
 
     /// <summary>
@@ -30,7 +33,10 @@ public abstract class BaseAnalyzer : DiagnosticAnalyzer
     /// <summary>
     ///     初始化分析器
     /// </summary>
-    public override void Initialize(AnalysisContext context)
+    public override void Initialize
+    (
+        AnalysisContext context
+    )
     {
         context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
         context.EnableConcurrentExecution();
@@ -41,12 +47,20 @@ public abstract class BaseAnalyzer : DiagnosticAnalyzer
     /// <summary>
     ///     在子类中实现以注册特定的分析逻辑
     /// </summary>
-    protected abstract void RegisterAnalyzers(AnalysisContext context);
+    protected abstract void RegisterAnalyzers
+    (
+        AnalysisContext context
+    );
 
     /// <summary>
     ///     创建并报告诊断问题
     /// </summary>
-    protected void ReportDiagnostic(SyntaxNodeAnalysisContext context, Location location, params object[] messageArgs)
+    protected void ReportDiagnostic
+    (
+        SyntaxNodeAnalysisContext context,
+        Location                  location,
+        params object[]           messageArgs
+    )
     {
         var diagnostic = Diagnostic.Create(Descriptor, location, messageArgs);
         context.ReportDiagnostic(diagnostic);

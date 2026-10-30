@@ -35,13 +35,19 @@ public class ExampleRuleAnalyzer : BaseAnalyzer
     {
     }
 
-    protected override void RegisterAnalyzers(AnalysisContext context)
+    protected override void RegisterAnalyzers
+    (
+        AnalysisContext context
+    )
     {
         // 注册分析器处理的语法节点类型
         context.RegisterSyntaxNodeAction(AnalyzeNode, SyntaxKind.MethodDeclaration); // 示例：分析方法声明
     }
 
-    private void AnalyzeNode(SyntaxNodeAnalysisContext context)
+    private void AnalyzeNode
+    (
+        SyntaxNodeAnalysisContext context
+    )
     {
         // 1. 获取需要分析的语法节点
         // var node = context.Node;

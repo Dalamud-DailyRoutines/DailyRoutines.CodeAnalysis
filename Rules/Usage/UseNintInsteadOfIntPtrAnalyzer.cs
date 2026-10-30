@@ -12,14 +12,20 @@ namespace DailyRoutines.CodeAnalysis.Rules.Usage;
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 public class UseNintInsteadOfIntPtrAnalyzer() : BaseAnalyzer(DiagnosticRules.UseNintInsteadOfIntPtr)
 {
-    protected override void RegisterAnalyzers(AnalysisContext context)
+    protected override void RegisterAnalyzers
+    (
+        AnalysisContext context
+    )
     {
         // 检查变量声明
         context.RegisterSyntaxNodeAction(AnalyzeNode, SyntaxKind.IdentifierName);
         context.RegisterSyntaxNodeAction(AnalyzeNode, SyntaxKind.QualifiedName);
     }
 
-    private void AnalyzeNode(SyntaxNodeAnalysisContext context)
+    private void AnalyzeNode
+    (
+        SyntaxNodeAnalysisContext context
+    )
     {
         var typeNode = context.Node;
         var typeName = string.Empty;

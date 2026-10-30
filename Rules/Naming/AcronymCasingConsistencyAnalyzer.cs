@@ -19,7 +19,10 @@ public class AcronymCasingConsistencyAnalyzer() : BaseAnalyzer(DiagnosticRules.A
     private static          List<List<string>> _ignoredSequencesCache;
     private static readonly object             _cacheLock = new();
 
-    protected override void RegisterAnalyzers(AnalysisContext context)
+    protected override void RegisterAnalyzers
+    (
+        AnalysisContext context
+    )
     {
         // 检查各种声明
         context.RegisterSyntaxNodeAction(AnalyzeVariableDeclaration,  SyntaxKind.VariableDeclarator);
@@ -29,21 +32,30 @@ public class AcronymCasingConsistencyAnalyzer() : BaseAnalyzer(DiagnosticRules.A
         context.RegisterSyntaxNodeAction(AnalyzeFieldDeclaration,     SyntaxKind.FieldDeclaration);
     }
 
-    private void AnalyzeVariableDeclaration(SyntaxNodeAnalysisContext context)
+    private void AnalyzeVariableDeclaration
+    (
+        SyntaxNodeAnalysisContext context
+    )
     {
         var variableDeclarator = (VariableDeclaratorSyntax)context.Node;
         var name               = variableDeclarator.Identifier.Text;
         AnalyzeName(context, name, variableDeclarator.Identifier.GetLocation());
     }
 
-    private void AnalyzeParameterDeclaration(SyntaxNodeAnalysisContext context)
+    private void AnalyzeParameterDeclaration
+    (
+        SyntaxNodeAnalysisContext context
+    )
     {
         var parameter = (ParameterSyntax)context.Node;
         var name      = parameter.Identifier.Text;
         AnalyzeName(context, name, parameter.Identifier.GetLocation());
     }
 
-    private void AnalyzeMethodDeclaration(SyntaxNodeAnalysisContext context)
+    private void AnalyzeMethodDeclaration
+    (
+        SyntaxNodeAnalysisContext context
+    )
     {
         var methodDeclaration = (MethodDeclarationSyntax)context.Node;
 
@@ -54,7 +66,10 @@ public class AcronymCasingConsistencyAnalyzer() : BaseAnalyzer(DiagnosticRules.A
         AnalyzeName(context, name, methodDeclaration.Identifier.GetLocation());
     }
 
-    private void AnalyzePropertyDeclaration(SyntaxNodeAnalysisContext context)
+    private void AnalyzePropertyDeclaration
+    (
+        SyntaxNodeAnalysisContext context
+    )
     {
         var propertyDeclaration = (PropertyDeclarationSyntax)context.Node;
 
@@ -65,7 +80,10 @@ public class AcronymCasingConsistencyAnalyzer() : BaseAnalyzer(DiagnosticRules.A
         AnalyzeName(context, name, propertyDeclaration.Identifier.GetLocation());
     }
 
-    private void AnalyzeFieldDeclaration(SyntaxNodeAnalysisContext context)
+    private void AnalyzeFieldDeclaration
+    (
+        SyntaxNodeAnalysisContext context
+    )
     {
         var fieldDeclaration = (FieldDeclarationSyntax)context.Node;
 
@@ -79,7 +97,11 @@ public class AcronymCasingConsistencyAnalyzer() : BaseAnalyzer(DiagnosticRules.A
     /// <summary>
     ///     检查符号是否是重写成员或接口实现
     /// </summary>
-    private static bool IsOverrideOrInterfaceImplementation(SyntaxNode node, SyntaxNodeAnalysisContext context)
+    private static bool IsOverrideOrInterfaceImplementation
+    (
+        SyntaxNode                node,
+        SyntaxNodeAnalysisContext context
+    )
     {
         var symbol = context.SemanticModel.GetDeclaredSymbol(node);
         if (symbol == null)
@@ -135,7 +157,12 @@ public class AcronymCasingConsistencyAnalyzer() : BaseAnalyzer(DiagnosticRules.A
     /// <param name="context">分析上下文</param>
     /// <param name="name">标识符名称</param>
     /// <param name="location">位置信息</param>
-    private void AnalyzeName(SyntaxNodeAnalysisContext context, string name, Location location)
+    private void AnalyzeName
+    (
+        SyntaxNodeAnalysisContext context,
+        string                    name,
+        Location                  location
+    )
     {
         if (string.IsNullOrEmpty(name))
             return;
@@ -161,7 +188,10 @@ public class AcronymCasingConsistencyAnalyzer() : BaseAnalyzer(DiagnosticRules.A
     /// </summary>
     /// <param name="name">标识符名称</param>
     /// <returns>不一致的缩写列表，包含原始缩写、全大写形式和全小写形式</returns>
-    private static List<(string acronym, string upperCase, string lowerCase)> FindInconsistentAcronyms(string name)
+    private static List<(string acronym, string upperCase, string lowerCase)> FindInconsistentAcronyms
+    (
+        string name
+    )
     {
         var result = new List<(string, string, string)>();
 
@@ -217,7 +247,12 @@ public class AcronymCasingConsistencyAnalyzer() : BaseAnalyzer(DiagnosticRules.A
     /// <summary>
     ///     检查单词序列是否匹配忽略序列
     /// </summary>
-    private static bool IsSequenceMatch(List<string> words, int startIndex, List<string> ignoredSequence)
+    private static bool IsSequenceMatch
+    (
+        List<string> words,
+        int          startIndex,
+        List<string> ignoredSequence
+    )
     {
         if (startIndex + ignoredSequence.Count > words.Count)
             return false;
@@ -261,7 +296,10 @@ public class AcronymCasingConsistencyAnalyzer() : BaseAnalyzer(DiagnosticRules.A
     /// </summary>
     /// <param name="name">标识符名称</param>
     /// <returns>分割后的单词列表</returns>
-    private static List<string> SplitCamelCase(string name)
+    private static List<string> SplitCamelCase
+    (
+        string name
+    )
     {
         var words = new List<string>();
         if (string.IsNullOrEmpty(name))

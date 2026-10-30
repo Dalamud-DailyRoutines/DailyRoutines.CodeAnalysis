@@ -21,7 +21,10 @@ public class ConfigurationClassesMustNotUseReadonlyFieldsCodeFixProvider : BaseC
     protected override ImmutableArray<string> GetFixableDiagnosticIds() =>
         ImmutableArray.Create(DiagnosticRules.ConfigurationClassesMustNotUseReadonlyFields.Id);
 
-    public override async Task RegisterCodeFixesAsync(CodeFixContext context)
+    public override async Task RegisterCodeFixesAsync
+    (
+        CodeFixContext context
+    )
     {
         var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
         if (root == null) return;
@@ -50,7 +53,12 @@ public class ConfigurationClassesMustNotUseReadonlyFieldsCodeFixProvider : BaseC
         );
     }
 
-    private static async Task<Document> RemoveReadonlyModifierAsync(Document document, FieldDeclarationSyntax fieldDeclaration, CancellationToken cancellationToken)
+    private static async Task<Document> RemoveReadonlyModifierAsync
+    (
+        Document               document,
+        FieldDeclarationSyntax fieldDeclaration,
+        CancellationToken      cancellationToken
+    )
     {
         var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
         if (root == null) return document;

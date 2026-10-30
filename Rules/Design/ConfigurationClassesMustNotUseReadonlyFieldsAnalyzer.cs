@@ -21,13 +21,19 @@ public class ConfigurationClassesMustNotUseReadonlyFieldsAnalyzer : BaseAnalyzer
     {
     }
 
-    protected override void RegisterAnalyzers(AnalysisContext context)
+    protected override void RegisterAnalyzers
+    (
+        AnalysisContext context
+    )
     {
         // 注册分析器处理的语法节点类型
         context.RegisterSyntaxNodeAction(AnalyzeFieldDeclaration, SyntaxKind.FieldDeclaration);
     }
 
-    private void AnalyzeFieldDeclaration(SyntaxNodeAnalysisContext context)
+    private void AnalyzeFieldDeclaration
+    (
+        SyntaxNodeAnalysisContext context
+    )
     {
         // 获取字段声明节点
         var fieldDeclaration = (FieldDeclarationSyntax)context.Node;

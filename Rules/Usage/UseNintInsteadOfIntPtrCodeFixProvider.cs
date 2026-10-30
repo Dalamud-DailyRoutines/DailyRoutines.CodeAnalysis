@@ -21,7 +21,10 @@ public class UseNintInsteadOfIntPtrCodeFixProvider : BaseCodeFixProvider
     protected override ImmutableArray<string> GetFixableDiagnosticIds() =>
         ImmutableArray.Create(DiagnosticRules.UseNintInsteadOfIntPtr.Id);
 
-    public override async Task RegisterCodeFixesAsync(CodeFixContext context)
+    public override async Task RegisterCodeFixesAsync
+    (
+        CodeFixContext context
+    )
     {
         var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
         if (root == null) return;
@@ -46,7 +49,12 @@ public class UseNintInsteadOfIntPtrCodeFixProvider : BaseCodeFixProvider
         );
     }
 
-    private static async Task<Document> ReplaceWithNintAsync(Document document, SyntaxNode typeNode, CancellationToken cancellationToken)
+    private static async Task<Document> ReplaceWithNintAsync
+    (
+        Document          document,
+        SyntaxNode        typeNode,
+        CancellationToken cancellationToken
+    )
     {
         var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
         if (root == null) return document;

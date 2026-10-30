@@ -77,11 +77,11 @@
     </Target>
 
     <ItemGroup>
-        <None Remove="build\**" />
+        <None Remove="build\**"/>
 
         <None Include="build\**"
               Pack="true"
-              PackagePath="build\" />
+              PackagePath="build\"/>
     </ItemGroup>
 
 </Project>

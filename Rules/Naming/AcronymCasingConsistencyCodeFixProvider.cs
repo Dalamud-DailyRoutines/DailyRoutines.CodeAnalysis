@@ -23,7 +23,10 @@ public class AcronymCasingConsistencyCodeFixProvider : BaseCodeFixProvider
     protected override ImmutableArray<string> GetFixableDiagnosticIds() =>
         ImmutableArray.Create(DiagnosticRules.AcronymCasingConsistency.Id);
 
-    public override async Task RegisterCodeFixesAsync(CodeFixContext context)
+    public override async Task RegisterCodeFixesAsync
+    (
+        CodeFixContext context
+    )
     {
         var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
         if (root == null) return;
@@ -84,7 +87,10 @@ public class AcronymCasingConsistencyCodeFixProvider : BaseCodeFixProvider
     /// </summary>
     /// <param name="originalName">原始名称</param>
     /// <returns>修复选项列表，包含新名称和描述</returns>
-    private static List<(string newName, string description)> GenerateFixOptions(string originalName)
+    private static List<(string newName, string description)> GenerateFixOptions
+    (
+        string originalName
+    )
     {
         var options   = new List<(string, string)>();
         var fixedName = FixAcronymCasing(originalName);
@@ -100,7 +106,10 @@ public class AcronymCasingConsistencyCodeFixProvider : BaseCodeFixProvider
     /// </summary>
     /// <param name="name">原始名称</param>
     /// <returns>修复后的名称</returns>
-    private static string FixAcronymCasing(string name)
+    private static string FixAcronymCasing
+    (
+        string name
+    )
     {
         if (string.IsNullOrEmpty(name)) return name;
 
@@ -158,7 +167,10 @@ public class AcronymCasingConsistencyCodeFixProvider : BaseCodeFixProvider
     /// </summary>
     /// <param name="name">标识符名称</param>
     /// <returns>分割后的单词列表</returns>
-    private static List<string> SplitCamelCase(string name)
+    private static List<string> SplitCamelCase
+    (
+        string name
+    )
     {
         var words = new List<string>();
         if (string.IsNullOrEmpty(name))
@@ -190,7 +202,13 @@ public class AcronymCasingConsistencyCodeFixProvider : BaseCodeFixProvider
     /// <param name="newName">新名称</param>
     /// <param name="cancellationToken">取消令牌</param>
     /// <returns>修改后的解决方案</returns>
-    private static async Task<Solution> RenameSymbolAsync(Document document, ISymbol symbol, string newName, CancellationToken cancellationToken)
+    private static async Task<Solution> RenameSymbolAsync
+    (
+        Document          document,
+        ISymbol           symbol,
+        string            newName,
+        CancellationToken cancellationToken
+    )
     {
         var solution = document.Project.Solution;
         var options  = solution.Workspace.Options;

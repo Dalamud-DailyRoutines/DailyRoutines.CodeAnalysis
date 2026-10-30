@@ -60,6 +60,16 @@ public static class DiagnosticRules
         "为了保持配置类的一致性和可扩展性，继承自 ManagerConfiguration 或 ModuleConfiguration 的类中不应使用 readonly 修饰符。"
     );
 
+    public static readonly DiagnosticDescriptor UsePrimaryConstructor = DiagnosticDescriptorFactory.Create
+    (
+        "0010",
+        "使用主构造函数",
+        "构造函数 '{0}' 可以转换为主构造函数",
+        DiagnosticCategories.Design,
+        DiagnosticSeverity.Error,
+        "可以安全转换为主构造函数的构造函数必须使用主构造函数。"
+    );
+
     /// <summary>
     ///     诊断规则：英文缩写大小写必须保持一致
     /// </summary>

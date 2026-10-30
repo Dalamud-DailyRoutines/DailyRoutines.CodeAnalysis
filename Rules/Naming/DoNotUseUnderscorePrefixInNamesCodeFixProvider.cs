@@ -20,7 +20,10 @@ public class DoNotUseUnderscorePrefixInNamesCodeFixProvider : BaseCodeFixProvide
     protected override ImmutableArray<string> GetFixableDiagnosticIds() =>
         ImmutableArray.Create(DiagnosticRules.DoNotUseUnderscorePrefixInNames.Id);
 
-    public override async Task RegisterCodeFixesAsync(CodeFixContext context)
+    public override async Task RegisterCodeFixesAsync
+    (
+        CodeFixContext context
+    )
     {
         var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
         if (root == null) return;
@@ -61,7 +64,13 @@ public class DoNotUseUnderscorePrefixInNamesCodeFixProvider : BaseCodeFixProvide
         );
     }
 
-    private static async Task<Solution> RenameSymbolAsync(Document document, ISymbol symbol, string newName, CancellationToken cancellationToken)
+    private static async Task<Solution> RenameSymbolAsync
+    (
+        Document          document,
+        ISymbol           symbol,
+        string            newName,
+        CancellationToken cancellationToken
+    )
     {
         var solution = document.Project.Solution;
         var options  = solution.Workspace.Options;

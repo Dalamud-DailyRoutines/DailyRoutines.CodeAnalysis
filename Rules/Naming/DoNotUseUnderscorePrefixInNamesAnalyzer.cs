@@ -14,7 +14,10 @@ namespace DailyRoutines.CodeAnalysis.Rules.Naming;
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 public class DoNotUseUnderscorePrefixInNamesAnalyzer() : BaseAnalyzer(DiagnosticRules.DoNotUseUnderscorePrefixInNames)
 {
-    protected override void RegisterAnalyzers(AnalysisContext context)
+    protected override void RegisterAnalyzers
+    (
+        AnalysisContext context
+    )
     {
         // 检查各种声明
         context.RegisterSyntaxNodeAction(AnalyzeVariableDeclaration,  SyntaxKind.VariableDeclarator);
@@ -26,7 +29,10 @@ public class DoNotUseUnderscorePrefixInNamesAnalyzer() : BaseAnalyzer(Diagnostic
         context.RegisterSyntaxNodeAction(AnalyzeInterfaceDeclaration, SyntaxKind.InterfaceDeclaration);
     }
 
-    private void AnalyzeVariableDeclaration(SyntaxNodeAnalysisContext context)
+    private void AnalyzeVariableDeclaration
+    (
+        SyntaxNodeAnalysisContext context
+    )
     {
         var variableDeclarator = (VariableDeclaratorSyntax)context.Node;
         var name               = variableDeclarator.Identifier.Text;
@@ -35,7 +41,10 @@ public class DoNotUseUnderscorePrefixInNamesAnalyzer() : BaseAnalyzer(Diagnostic
             ReportDiagnostic(context, variableDeclarator.Identifier.GetLocation());
     }
 
-    private void AnalyzeParameterDeclaration(SyntaxNodeAnalysisContext context)
+    private void AnalyzeParameterDeclaration
+    (
+        SyntaxNodeAnalysisContext context
+    )
     {
         var parameter = (ParameterSyntax)context.Node;
         var name      = parameter.Identifier.Text;
@@ -44,7 +53,10 @@ public class DoNotUseUnderscorePrefixInNamesAnalyzer() : BaseAnalyzer(Diagnostic
             ReportDiagnostic(context, parameter.Identifier.GetLocation());
     }
 
-    private void AnalyzeMethodDeclaration(SyntaxNodeAnalysisContext context)
+    private void AnalyzeMethodDeclaration
+    (
+        SyntaxNodeAnalysisContext context
+    )
     {
         var methodDeclaration = (MethodDeclarationSyntax)context.Node;
         var name              = methodDeclaration.Identifier.Text;
@@ -53,7 +65,10 @@ public class DoNotUseUnderscorePrefixInNamesAnalyzer() : BaseAnalyzer(Diagnostic
             ReportDiagnostic(context, methodDeclaration.Identifier.GetLocation());
     }
 
-    private void AnalyzePropertyDeclaration(SyntaxNodeAnalysisContext context)
+    private void AnalyzePropertyDeclaration
+    (
+        SyntaxNodeAnalysisContext context
+    )
     {
         var propertyDeclaration = (PropertyDeclarationSyntax)context.Node;
         var name                = propertyDeclaration.Identifier.Text;
@@ -62,7 +77,10 @@ public class DoNotUseUnderscorePrefixInNamesAnalyzer() : BaseAnalyzer(Diagnostic
             ReportDiagnostic(context, propertyDeclaration.Identifier.GetLocation());
     }
 
-    private void AnalyzeFieldDeclaration(SyntaxNodeAnalysisContext context)
+    private void AnalyzeFieldDeclaration
+    (
+        SyntaxNodeAnalysisContext context
+    )
     {
         var fieldDeclaration = (FieldDeclarationSyntax)context.Node;
         foreach (var variable in from variable in fieldDeclaration.Declaration.Variables
@@ -72,7 +90,10 @@ public class DoNotUseUnderscorePrefixInNamesAnalyzer() : BaseAnalyzer(Diagnostic
             ReportDiagnostic(context, variable.Identifier.GetLocation());
     }
 
-    private void AnalyzeClassDeclaration(SyntaxNodeAnalysisContext context)
+    private void AnalyzeClassDeclaration
+    (
+        SyntaxNodeAnalysisContext context
+    )
     {
         var classDeclaration = (ClassDeclarationSyntax)context.Node;
         var name             = classDeclaration.Identifier.Text;
@@ -81,7 +102,10 @@ public class DoNotUseUnderscorePrefixInNamesAnalyzer() : BaseAnalyzer(Diagnostic
             ReportDiagnostic(context, classDeclaration.Identifier.GetLocation());
     }
 
-    private void AnalyzeInterfaceDeclaration(SyntaxNodeAnalysisContext context)
+    private void AnalyzeInterfaceDeclaration
+    (
+        SyntaxNodeAnalysisContext context
+    )
     {
         var interfaceDeclaration = (InterfaceDeclarationSyntax)context.Node;
         var name                 = interfaceDeclaration.Identifier.Text;
@@ -95,7 +119,10 @@ public class DoNotUseUnderscorePrefixInNamesAnalyzer() : BaseAnalyzer(Diagnostic
     /// </summary>
     /// <param name="name">标识符名称</param>
     /// <returns>如果应该报告则返回true，否则返回false</returns>
-    private static bool ShouldReportUnderscorePrefix(string name)
+    private static bool ShouldReportUnderscorePrefix
+    (
+        string name
+    )
     {
         // 排除单独一个下划线的情况（C#中通常用作弃元标识符）
         if (name == "_")
