@@ -57,7 +57,8 @@ public static class AcronymConstants
         "DAO",
         "TTL",
         "IO",
-        "MCP"
+        "MCP",
+        "ASCII"
     };
 
     /// <summary>
