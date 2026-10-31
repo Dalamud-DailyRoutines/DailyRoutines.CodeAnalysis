@@ -32,6 +32,7 @@ public sealed class UsePrimaryConstructorAnalyzer() : BaseAnalyzer(DiagnosticRul
             constructor.Modifiers.Any(SyntaxKind.UnsafeKeyword)                                                        ||
             constructor.AttributeLists.Count                                          != 0                             ||
             constructor.Initializer?.ThisOrBaseKeyword.IsKind(SyntaxKind.ThisKeyword) == true                          ||
+            constructor.ContainsDirectives                                                                            ||
             constructor.ContainsDiagnostics)
             return;
 
